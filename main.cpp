@@ -6,6 +6,19 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 
+class Point
+{
+public:
+  Point(int x, int y)
+    :
+      m_x(x),
+      m_y(y)
+  {}
+
+  int m_x;
+  int m_y;
+};
+
 class Color
 {
 public:
@@ -106,12 +119,11 @@ private:
 class ScanRectangle
 {
 public:
-  ScanRectangle(int x, int y, int width, int height,
+  ScanRectangle(const Point &origin, int width, int height,
                 std::shared_ptr<Image> img1,
                 std::shared_ptr<Image> img2)
     :
-      m_x(x),
-      m_y(y),
+      m_origin(origin),
       m_width(width),
       m_height(height),
       m_img1(img1),
@@ -122,11 +134,11 @@ public:
 
   bool test() const
   {
-    const int cMax = std::min(m_x + m_width, m_xLimit);
-    const int rMax = std::min(m_y + m_height, m_yLimit);
-    for (int c = m_x; c < cMax; c++)
+    const int cMax = std::min(m_origin.m_x + m_width, m_xLimit);
+    const int rMax = std::min(m_origin.m_y + m_height, m_yLimit);
+    for (int c = m_origin.m_x; c < cMax; c++)
     {
-      for (int r = m_y; r < rMax; r++)
+      for (int r = m_origin.m_y; r < rMax; r++)
       {
         Color color1 = m_img1->pixel(r, c);
         Color color2 = m_img2->pixel(r, c);
@@ -144,8 +156,8 @@ public:
   //! Indicates whether the rectangle reached the end of scanning.
   bool atEnd() const
   {
-    return m_x == 0 &&
-           m_y >= m_yLimit;
+    return m_origin.m_x == 0 &&
+           m_origin.m_y >= m_yLimit;
   }
 
   //! A pre-increment operator.
@@ -153,15 +165,15 @@ public:
   {
     if (!atEnd())
     {
-      if (m_x < m_xLimit)
+      if (m_origin.m_x < m_xLimit)
       {
-        m_x += m_width;
+        m_origin.m_x += m_width;
       }
-      else if (m_y < m_yLimit)
+      else if (m_origin.m_y < m_yLimit)
       {
         // Move to the next row and left most position.
-        m_x = 0;
-        m_y += m_height;
+        m_origin.m_x = 0;
+        m_origin.m_y += m_height;
       }
     }
 
@@ -169,8 +181,7 @@ public:
   }
 
 private:
-  int m_x;
-  int m_y;
+  Point m_origin;
   int m_width;
   int m_height;
   int m_xLimit;
@@ -206,7 +217,8 @@ int main(int argc, char **argv)
     return 1;
   }
 
-  ScanRectangle sr(0, 0, 5, 5, img1, img2);
+  Point origin{0, 0};
+  ScanRectangle sr(origin, 43, 43, img1, img2);
   std::vector<ScanRectangle> failedRects;
   while (!sr.atEnd())
   {
