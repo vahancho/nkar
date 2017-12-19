@@ -94,26 +94,38 @@ private:
   int m_height;
 };
 
+//! Implement a scanning rectangle.
+/*!
+  This is a rectangle that moves through the whole image step by step until it
+  reaches the lower right corner of the image.
+*/
 class ScanRectangle
 {
 public:
-  ScanRectangle(int x, int y, int width, int height, int maxWidth, int maxHeight)
+  ScanRectangle(int x, int y, int width, int height, int xLimit, int yLimit)
     :
       m_x(x),
       m_y(y),
       m_width(width),
       m_height(height),
-      m_maxWidth(maxWidth),
-      m_maxHeight(maxHeight)
+      m_xLimit(xLimit),
+      m_yLimit(yLimit)
   {}
+
+  //! Indicates whether the rectangle reached the end of scanning.
+  bool atEnd() const
+  {
+    return m_x + m_width == m_xLimit &&
+           m_y + m_height == m_yLimit;
+  }
 
 private:
   int m_x;
   int m_y;
   int m_width;
   int m_height;
-  int m_maxWidth;
-  int m_maxHeight;
+  int m_xLimit;
+  int m_yLimit;
 };
 
 int main(int argc, char **argv)
