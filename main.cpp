@@ -1,4 +1,7 @@
 #include <string>
+#include <memory>
+#include <algorithm>
+#include <vector>
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
@@ -97,26 +100,72 @@ private:
 //! Implement a scanning rectangle.
 /*!
   This is a rectangle that moves through the whole image step by step until it
-  reaches the lower right corner of the image.
+  reaches the lower right corner of the image. It moves from left to right and
+  from top to bottom - this is scanning order.
 */
 class ScanRectangle
 {
 public:
-  ScanRectangle(int x, int y, int width, int height, int xLimit, int yLimit)
+  ScanRectangle(int x, int y, int width, int height,
+                std::shared_ptr<Image> img1,
+                std::shared_ptr<Image> img2)
     :
       m_x(x),
       m_y(y),
       m_width(width),
       m_height(height),
-      m_xLimit(xLimit),
-      m_yLimit(yLimit)
+      m_img1(img1),
+      m_img2(img2),
+      m_xLimit(std::min(img1->width(), img2->width())),
+      m_yLimit(std::min(img1->height(), img2->height()))
   {}
+
+  bool test() const
+  {
+    const int cMax = std::min(m_x + m_width, m_xLimit);
+    const int rMax = std::min(m_y + m_height, m_yLimit);
+    for (int c = m_x; c < cMax; c++)
+    {
+      for (int r = m_y; r < rMax; r++)
+      {
+        Color color1 = m_img1->pixel(r, c);
+        Color color2 = m_img2->pixel(r, c);
+
+        if (color1 != color2)
+        {
+          fprintf(stderr, "Different pixels at (%d, %d)\n", r, c);
+          return false;
+        }
+      }
+    }
+    return true;
+  }
 
   //! Indicates whether the rectangle reached the end of scanning.
   bool atEnd() const
   {
-    return m_x + m_width == m_xLimit &&
-           m_y + m_height == m_yLimit;
+    return m_x == 0 &&
+           m_y >= m_yLimit;
+  }
+
+  //! A pre-increment operator.
+  ScanRectangle &operator++()
+  {
+    if (!atEnd())
+    {
+      if (m_x < m_xLimit)
+      {
+        m_x += m_width;
+      }
+      else if (m_y < m_yLimit)
+      {
+        // Move to the next row and left most position.
+        m_x = 0;
+        m_y += m_height;
+      }
+    }
+
+    return *this;
   }
 
 private:
@@ -126,6 +175,9 @@ private:
   int m_height;
   int m_xLimit;
   int m_yLimit;
+
+  std::shared_ptr<Image> m_img1;
+  std::shared_ptr<Image> m_img2;
 };
 
 int main(int argc, char **argv)
@@ -135,37 +187,34 @@ int main(int argc, char **argv)
   std::string file1("d:/test1.png");
   std::string file2("d:/test2.png");
 
-  Image img1(file1);
-  Image img2(file2);
+  std::shared_ptr<Image> img1 = std::make_shared<Image>(file1);
+  std::shared_ptr<Image> img2 = std::make_shared<Image>(file2);
 
-  if (!img1.open())
+  if (!img1->open())
   {
     return 1;
   }
 
-  if (!img2.open())
+  if (!img2->open())
   {
     return 1;
   }
 
-  if (img1.width() != img2.width() || img1.height() != img2.height())
+  if (img1->width() != img2->width() || img1->height() != img2->height())
   {
     fprintf(stderr, "Images have different dimensions\n");
     return 1;
   }
 
-  for (int r = 0; r < img1.height(); r++)
+  ScanRectangle sr(0, 0, 5, 5, img1, img2);
+  std::vector<ScanRectangle> failedRects;
+  while (!sr.atEnd())
   {
-    for (int c = 0; c < img1.width(); c++)
+    if (!sr.test())
     {
-      Color color1 = img1.pixel(r, c);
-      Color color2 = img2.pixel(r, c);
-
-      if (color1 != color2)
-      {
-        fprintf(stderr, "Different pixels at (%d, %d)\n", r, c);
-      }
+      failedRects.emplace_back(sr);
     }
+    ++sr;
   }
 
   printf("end\n");
