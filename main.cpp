@@ -2,6 +2,7 @@
 #include <memory>
 #include <algorithm>
 #include <vector>
+#include <set>
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
@@ -9,14 +10,60 @@
 class Point
 {
 public:
-  Point(int x, int y)
+  Point(int x = 0, int y = 0)
     :
       m_x(x),
       m_y(y)
   {}
 
+  bool operator==(const Point &other) const
+  {
+    return m_x == other.m_x && m_y == other.m_y;
+  }
+
+  bool operator<(const Point &other) const
+  {
+    if (m_x < other.m_x)
+    {
+      return true;
+    }
+    else if (m_x == other.m_x)
+    {
+      return m_y < other.m_y;
+    }
+    return false;
+  }
+
   int m_x;
   int m_y;
+};
+
+class Edge
+{
+public:
+  Edge(const Point &begin, const Point &end)
+    :
+      m_begin(begin),
+      m_end(end)
+  {}
+
+  bool operator<(const Edge &other) const
+  {
+    // Sort vertically
+    if (m_begin.m_y < other.m_begin.m_y)
+    {
+      return true;
+    }
+    else if (m_begin.m_y == other.m_begin.m_y)
+    {
+      return m_begin.m_x < other.m_begin.m_x;
+    }
+    return false;
+  }
+
+//private:
+  Point m_begin;
+  Point m_end;
 };
 
 class Color
@@ -132,19 +179,47 @@ public:
       m_yLimit(std::min(img1->height(), img2->height()))
   {}
 
+  int pointCount() const
+  {
+    return 4;
+  }
+
+  Point point(int idx) const
+  {
+    assert(idx < pointCount());
+
+    // 0 +---------+ 1
+    //   |         |
+    //   |         |
+    // 3 +---------+ 2
+
+    switch (idx) {
+    case 0:
+      return m_origin;
+    case 1:
+      return Point(std::min(m_origin.m_x + m_width, m_xLimit), m_origin.m_y);
+    case 2:
+      return Point(std::min(m_origin.m_x + m_width, m_xLimit),
+                   std::min(m_origin.m_y + m_height, m_yLimit));
+    case 3:
+      return Point(m_origin.m_x,
+                   std::min(m_origin.m_y + m_height, m_yLimit));
+    default:
+      break;
+    }
+    return Point();
+  }
+
   bool test() const
   {
     const int cMax = std::min(m_origin.m_x + m_width, m_xLimit);
     const int rMax = std::min(m_origin.m_y + m_height, m_yLimit);
-    for (int c = m_origin.m_x; c < cMax; c++)
-    {
-      for (int r = m_origin.m_y; r < rMax; r++)
-      {
+    for (int c = m_origin.m_x; c < cMax; c++) {
+      for (int r = m_origin.m_y; r < rMax; r++) {
         Color color1 = m_img1->pixel(r, c);
         Color color2 = m_img2->pixel(r, c);
 
-        if (color1 != color2)
-        {
+        if (color1 != color2) {
           fprintf(stderr, "Different pixels at (%d, %d)\n", r, c);
           return false;
         }
@@ -163,14 +238,10 @@ public:
   //! A pre-increment operator.
   ScanRectangle &operator++()
   {
-    if (!atEnd())
-    {
-      if (m_origin.m_x < m_xLimit)
-      {
+    if (!atEnd()) {
+      if (m_origin.m_x < m_xLimit) {
         m_origin.m_x += m_width;
-      }
-      else if (m_origin.m_y < m_yLimit)
-      {
+      } else if (m_origin.m_y < m_yLimit) {
         // Move to the next row and left most position.
         m_origin.m_x = 0;
         m_origin.m_y += m_height;
@@ -191,44 +262,133 @@ private:
   std::shared_ptr<Image> m_img2;
 };
 
+class Contour
+{
+public:
+  void addEdge(const Edge &edge)
+  {
+    m_edges.emplace(edge);
+  }
+
+//private:
+  std::set<Edge> m_edges;
+};
+
+class Contours
+{
+public:
+  size_t pointCount() const
+  {
+    return m_points.size();
+  }
+
+  void addRect(const ScanRectangle &rect)
+  {
+    for (int i = 0; i < rect.pointCount(); ++i) {
+      auto result = m_points.emplace(rect.point(i));
+      if (!result.second) {
+        m_points.erase(result.first);
+
+        for (auto &contour : m_contours)
+        {
+          contour.erase(rect.point(i));
+        }
+      }
+      else if (i == 0)
+      {
+        printf("new contour (%d, %d)\n", rect.point(i).m_x, rect.point(i).m_y);
+        m_contours.emplace_back();
+        m_contours.back().emplace(rect.point(i));
+      }
+      else
+      {
+        m_contours.back().emplace(rect.point(i));
+      }
+    }
+  }
+
+  void extractContours()
+  {
+    assert(pointCount() % 2 == 0);
+
+    Contour contour;
+    auto it = m_points.begin();
+    while (it != m_points.end())
+    {
+      const Point &p1 = *it;
+      const Point &p2 = *(std::next(it));
+      Edge edge{ p1, p2 };
+
+      contour.addEdge(edge);
+
+      std::advance(it, 2);
+    }
+
+    int a = 0;
+
+    auto eit = contour.m_edges.begin();
+    while (eit != contour.m_edges.end())
+    {
+      auto eitNext = contour.m_edges.begin();
+      while (eitNext != contour.m_edges.end())
+      {
+        if (eit->m_begin.m_y == eitNext->m_begin.m_y)
+        {
+          printf("connection: (%d, %d) -> (%d, %d)\n",
+                 eit->m_begin.m_x, eit->m_begin.m_y,
+                 eitNext->m_begin.m_x, eitNext->m_begin.m_y);
+        }
+        else if (eit->m_end.m_y == eitNext->m_end.m_y)
+        {
+          printf("connection: (%d, %d) -> (%d, %d)\n",
+                 eit->m_end.m_x, eit->m_end.m_y,
+                 eitNext->m_end.m_x, eitNext->m_end.m_y);
+        }
+        ++eitNext;
+      }
+      ++eit;
+    }
+  }
+
+private:
+  std::set<Point> m_points;
+  std::vector<std::set<Point>> m_contours;
+};
+
 int main(int argc, char **argv)
 {
-  printf("run...\n");
-
   std::string file1("d:/test1.png");
   std::string file2("d:/test2.png");
 
   std::shared_ptr<Image> img1 = std::make_shared<Image>(file1);
   std::shared_ptr<Image> img2 = std::make_shared<Image>(file2);
 
-  if (!img1->open())
-  {
+  if (!img1->open() || !img2->open()) {
     return 1;
   }
 
-  if (!img2->open())
-  {
-    return 1;
-  }
-
-  if (img1->width() != img2->width() || img1->height() != img2->height())
-  {
+  if (img1->width() != img2->width() || img1->height() != img2->height()) {
     fprintf(stderr, "Images have different dimensions\n");
     return 1;
   }
 
   Point origin{0, 0};
-  ScanRectangle sr(origin, 43, 43, img1, img2);
+  ScanRectangle sr(origin, 3, 3, img1, img2);
   std::vector<ScanRectangle> failedRects;
-  while (!sr.atEnd())
-  {
-    if (!sr.test())
-    {
+  while (!sr.atEnd()) {
+    if (!sr.test()) {
       failedRects.emplace_back(sr);
     }
     ++sr;
   }
 
-  printf("end\n");
+  Contours contours;
+  for (const auto &rect : failedRects) {
+    contours.addRect(rect);
+  }
+  assert(contours.pointCount() % 2 == 0);
+
+  contours.extractContours();
+
   return 0;
 }
