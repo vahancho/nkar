@@ -61,6 +61,27 @@ public:
     return false;
   }
 
+  int x() const
+  {
+    return m_x;
+  }
+
+  int y() const
+  {
+    return m_y;
+  }
+
+  int &x()
+  {
+    return m_x;
+  }
+
+  int &y()
+  {
+    return m_y;
+  }
+
+private:
   int m_x;
   int m_y;
 };
@@ -77,18 +98,28 @@ public:
   bool operator<(const Edge &other) const
   {
     // Sort vertically
-    if (m_begin.m_y < other.m_begin.m_y)
+    if (m_begin.y() < other.m_begin.y())
     {
       return true;
     }
-    else if (m_begin.m_y == other.m_begin.m_y)
+    else if (m_begin.y() == other.m_begin.y())
     {
-      return m_begin.m_x < other.m_begin.m_x;
+      return m_begin.x() < other.m_begin.x();
     }
     return false;
   }
 
-//private:
+  const Point &begin() const
+  {
+    return m_begin;
+  }
+
+  const Point &end() const
+  {
+    return m_end;
+  }
+
+private:
   Point m_begin;
   Point m_end;
 };
@@ -110,7 +141,7 @@ public:
            m_blue  != other.m_blue;
   }
 
-private:
+//private:
   int m_red;
   int m_green;
   int m_blue;
@@ -249,13 +280,13 @@ public:
     case 0:
       return m_origin;
     case 1:
-      return Point(std::min(m_origin.m_x + m_width, m_xLimit), m_origin.m_y);
+      return Point(std::min(m_origin.x() + m_width, m_xLimit), m_origin.y());
     case 2:
-      return Point(std::min(m_origin.m_x + m_width, m_xLimit),
-                   std::min(m_origin.m_y + m_height, m_yLimit));
+      return Point(std::min(m_origin.x() + m_width, m_xLimit),
+                   std::min(m_origin.y() + m_height, m_yLimit));
     case 3:
-      return Point(m_origin.m_x,
-                   std::min(m_origin.m_y + m_height, m_yLimit));
+      return Point(m_origin.x(),
+                   std::min(m_origin.y() + m_height, m_yLimit));
     default:
       break;
     }
@@ -264,10 +295,11 @@ public:
 
   bool test() const
   {
-    const int cMax = std::min(m_origin.m_x + m_width, m_xLimit);
-    const int rMax = std::min(m_origin.m_y + m_height, m_yLimit);
-    for (int c = m_origin.m_x; c < cMax; c++) {
-      for (int r = m_origin.m_y; r < rMax; r++) {
+    const int cMax = std::min(m_origin.x() + m_width, m_xLimit);
+    const int rMax = std::min(m_origin.y() + m_height, m_yLimit);
+    for (int c = m_origin.x(); c < cMax; c++)
+    {
+      for (int r = m_origin.y(); r < rMax; r++) {
         Color color1 = m_img1->pixel(r, c);
         Color color2 = m_img2->pixel(r, c);
 
@@ -283,20 +315,23 @@ public:
   //! Indicates whether the rectangle reached the end of scanning.
   bool atEnd() const
   {
-    return m_origin.m_x == 0 &&
-           m_origin.m_y >= m_yLimit;
+    return m_origin.x() == 0 &&
+           m_origin.y() >= m_yLimit;
   }
 
   //! A pre-increment operator.
   ScanRectangle &operator++()
   {
     if (!atEnd()) {
-      if (m_origin.m_x < m_xLimit) {
-        m_origin.m_x += m_width;
-      } else if (m_origin.m_y < m_yLimit) {
+      if (m_origin.x() < m_xLimit)
+      {
+        m_origin.x() += m_width;
+      }
+      else if (m_origin.y() < m_yLimit)
+      {
         // Move to the next row and left most position.
-        m_origin.m_x = 0;
-        m_origin.m_y += m_height;
+        m_origin.x() = 0;
+        m_origin.y() += m_height;
       }
     }
 
