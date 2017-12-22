@@ -163,11 +163,11 @@ public:
   {
     assert(row < m_height && column < m_width);
 
-    auto pos = row * m_width + column;
+    auto pos = (row * m_width + column) * STBI_rgb;
 
-    auto red   = m_data[pos * STBI_rgb];
-    auto green = m_data[pos * STBI_rgb + 1];
-    auto blue  = m_data[pos * STBI_rgb + 2];
+    auto red   = m_data[pos];
+    auto green = m_data[pos + 1];
+    auto blue  = m_data[pos + 2];
 
     return { red, green, blue };
   }
@@ -176,13 +176,14 @@ public:
   {
     assert(row < m_height && column < m_width);
 
-    auto pos = row * m_width + column;
+    auto pos = (row * m_width + column) * STBI_rgb;
 
-    m_data[pos * STBI_rgb]     = color.m_red;
-    m_data[pos * STBI_rgb + 1] = color.m_green;
-    m_data[pos * STBI_rgb + 2] = color.m_blue;
+    m_data[pos]     = color.m_red;
+    m_data[pos + 1] = color.m_green;
+    m_data[pos + 2] = color.m_blue;
   }
 
+  //! Draws either a horizontal or vertical line.
   void drawLine(const Point &start, const Point &end, const Color &color)
   {
     for (int c = std::min(start.x(), end.x()); c <= std::max(start.x(), end.x()); ++c)
