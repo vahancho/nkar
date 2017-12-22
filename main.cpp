@@ -31,6 +31,9 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 
+#define STB_IMAGE_WRITE_IMPLEMENTATION
+#include "stb_image_write.h"
+
 class Point
 {
 public:
@@ -172,6 +175,35 @@ public:
     auto blue  = m_data[pos * STBI_rgb + 2];
 
     return { red, green, blue };
+  }
+
+  void setPixel(int row, int column, const Color &color)
+  {
+    assert(row < m_height && column < m_width);
+
+    auto pos = row * m_width + column;
+
+    m_data[pos * STBI_rgb]     = color.m_red;
+    m_data[pos * STBI_rgb + 1] = color.m_green;
+    m_data[pos * STBI_rgb + 2] = color.m_blue;
+  }
+
+  void drawLine(const Point &start, const Point &end, const Color &color)
+  {
+    for (int c = std::min(start.x(), end.x()); c <= std::max(start.x(), end.x()); ++c)
+    {
+      for (int r = std::min(start.y(), end.y()); r <= std::max(start.y(), end.y()); ++r)
+      {
+        setPixel(r, c, color);
+      }
+    }
+  }
+
+  bool save(const std::string &file) const
+  {
+    return stbi_write_png(file.c_str(), width(), height(),
+                          STBI_rgb, data(), width() * STBI_rgb) != 0;
+
   }
 
 private:
