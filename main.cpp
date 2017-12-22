@@ -159,11 +159,6 @@ public:
     return m_height;
   }
 
-  const unsigned char *data() const
-  {
-    return m_data;
-  }
-
   Color pixel(int row, int column) const
   {
     assert(row < m_height && column < m_width);
@@ -202,7 +197,7 @@ public:
   bool save(const std::string &file) const
   {
     return stbi_write_png(file.c_str(), width(), height(),
-                          STBI_rgb, data(), width() * STBI_rgb) != 0;
+                          STBI_rgb, m_data, width() * STBI_rgb) != 0;
 
   }
 
