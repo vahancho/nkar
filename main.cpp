@@ -390,18 +390,6 @@ private:
   std::shared_ptr<Image> m_img2;
 };
 
-class Contour
-{
-public:
-  void addEdge(const Edge &edge)
-  {
-    m_edges.emplace(edge);
-  }
-
-//private:
-  std::set<Edge> m_edges;
-};
-
 class Contours
 {
 public:
