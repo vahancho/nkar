@@ -27,6 +27,7 @@
 #include <algorithm>
 #include <vector>
 #include <set>
+#include <map>
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
@@ -329,6 +330,7 @@ public:
     return Point();
   }
 
+  //! Tests whether this scan rectangle contains a failed pixel.
   bool test() const
   {
     const int cMax = std::min(m_origin.x() + m_width, m_xLimit);
@@ -393,32 +395,17 @@ private:
 class Contours
 {
 public:
-  size_t pointCount() const
-  {
-    return m_points.size();
-  }
+  using Contour = std::vector<Edge>;
 
   void addRect(const ScanRectangle &rect)
   {
-    for (int i = 0; i < rect.pointCount(); ++i) {
-      auto result = m_points.emplace(rect.point(i));
-      if (!result.second) {
-        m_points.erase(result.first);
-
-        for (auto &contour : m_contours)
-        {
-          contour.erase(rect.point(i));
-        }
-      }
-      else if (i == 0)
+    for (int i = 0; i < rect.pointCount(); ++i)
+    {
+      const Edge &edge = rect.edge(i);
+      auto result = m_edges.emplace(edge, false);
+      if (!result.second)
       {
-        printf("new contour (%d, %d)\n", rect.point(i).m_x, rect.point(i).m_y);
-        m_contours.emplace_back();
-        m_contours.back().emplace(rect.point(i));
-      }
-      else
-      {
-        m_contours.back().emplace(rect.point(i));
+        m_edges.erase(result.first);
       }
     }
   }
@@ -466,9 +453,7 @@ public:
     }
   }
 
-private:
-  std::set<Point> m_points;
-  std::vector<std::set<Point>> m_contours;
+  std::map<Edge, bool> m_edges;
 };
 
 int main(int argc, char **argv)
