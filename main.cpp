@@ -374,6 +374,11 @@ public:
     return *this;
   }
 
+  const Point &origin() const
+  {
+    return m_origin;
+  }
+
 private:
   Point m_origin;
   int m_width;
