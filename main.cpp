@@ -157,7 +157,22 @@ public:
            m_blue  != other.m_blue;
   }
 
-//private:
+  int red() const
+  {
+    return m_red;
+  }
+
+  int green() const
+  {
+    return m_green;
+  }
+
+  int blue() const
+  {
+    return m_blue;
+  }
+
+private:
   int m_red;
   int m_green;
   int m_blue;
@@ -225,9 +240,9 @@ public:
 
     auto pos = (row * m_width + column) * STBI_rgb;
 
-    m_data[pos]     = color.m_red;
-    m_data[pos + 1] = color.m_green;
-    m_data[pos + 2] = color.m_blue;
+    m_data[pos]     = color.red();
+    m_data[pos + 1] = color.green();
+    m_data[pos + 2] = color.blue();
   }
 
   //! Draws either a horizontal or vertical line.
