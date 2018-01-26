@@ -480,8 +480,8 @@ int main(int argc, char **argv)
     return 1;
   }
 
-  Point origin{0, 0};
-  ScanRectangle sr(origin, 3, 3, img1, img2);
+  Point origin{0, 0}; // Start scanning from the upper left corner.
+  ScanRectangle sr(origin, 15, 15, img1, img2);
   std::vector<ScanRectangle> failedRects;
   while (!sr.atEnd()) {
     if (!sr.test()) {
@@ -494,9 +494,24 @@ int main(int argc, char **argv)
   for (const auto &rect : failedRects) {
     contours.addRect(rect);
   }
-  assert(contours.pointCount() % 2 == 0);
 
-  contours.extractContours();
+  // Draw red line for each edge.
+  static const Color highlightColor{ 255, 0, 0 };
+
+  const auto &cont = contours.contours();
+  printf("found %d contour(s)\n", cont.size());
+
+  for (size_t i = 0; i < cont.size(); ++i)
+  {
+    const auto &contour = cont[i];
+    for (const auto &edge : contour)
+    {
+      img2->drawLine(edge.begin(), edge.end(), highlightColor);
+    }
+  }
+
+  const std::string outFile("d:/res.png");
+  bool saved = img2->save(outFile);
 
   return 0;
 }
