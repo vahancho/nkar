@@ -93,7 +93,9 @@ public:
     :
       m_begin(begin),
       m_end(end)
-  {}
+  {
+    assert(m_begin < m_end);
+  }
 
   bool operator<(const Edge &other) const
   {
