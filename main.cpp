@@ -282,6 +282,27 @@ public:
     return 4;
   }
 
+  Edge edge(int idx) const
+  {
+    assert(idx < pointCount());
+
+    switch (idx)
+    {
+    case 0:
+      return Edge(point(0), point(1));
+    case 1:
+      return Edge(point(1), point(2));
+    case 2:
+      return Edge(point(3), point(2));
+    case 3:
+      return Edge(point(0), point(3));
+    default:
+      // This should never happen.
+      assert(false);
+      return Edge(Point(0,0), Point(0,0));
+    }
+  }
+
   Point point(int idx) const
   {
     assert(idx < pointCount());
