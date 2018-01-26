@@ -410,46 +410,53 @@ public:
     }
   }
 
-  void extractContours()
+  std::vector<Contour> contours()
   {
-    assert(pointCount() % 2 == 0);
+    // Find connected components in an undirected graph by using depth-first search
+    // algorithm.
+    std::vector<Contour> contours;
 
-    Contour contour;
-    auto it = m_points.begin();
-    while (it != m_points.end())
+    // Mark all as not visited.
+    for (auto &e : m_edges)
     {
-      const Point &p1 = *it;
-      const Point &p2 = *(std::next(it));
-      Edge edge{ p1, p2 };
-
-      contour.addEdge(edge);
-
-      std::advance(it, 2);
+      e.second = false;
     }
 
-    int a = 0;
-
-    auto eit = contour.m_edges.begin();
-    while (eit != contour.m_edges.end())
+    for (const auto &e : m_edges)
     {
-      auto eitNext = contour.m_edges.begin();
-      while (eitNext != contour.m_edges.end())
+      if (!e.second)
       {
-        if (eit->m_begin.m_y == eitNext->m_begin.m_y)
-        {
-          printf("connection: (%d, %d) -> (%d, %d)\n",
-                 eit->m_begin.m_x, eit->m_begin.m_y,
-                 eitNext->m_begin.m_x, eitNext->m_begin.m_y);
-        }
-        else if (eit->m_end.m_y == eitNext->m_end.m_y)
-        {
-          printf("connection: (%d, %d) -> (%d, %d)\n",
-                 eit->m_end.m_x, eit->m_end.m_y,
-                 eitNext->m_end.m_x, eitNext->m_end.m_y);
-        }
-        ++eitNext;
+        contours.emplace_back();
+        printf("Contour %d\n", contours.size());
+        // print all reachable edges from edge
+        dfs(e.first, contours.back());
       }
-      ++eit;
+    }
+    return contours;
+  }
+
+private:
+  void dfs(const Edge &edge, std::vector<Edge> &contour)
+  {
+    // Mark the current edge as visited and save it
+    m_edges[edge] = true;
+    contour.emplace_back(edge);
+
+    printf("\tedge (%d, %d)(%d, %d)\n", edge.begin().x(), edge.begin().y(),
+                                        edge.end().x(), edge.end().y());
+
+    // Recur for all the edges adjacent to this edge
+    for (const auto &e : m_edges)
+    {
+      if (!e.second)
+      {
+        const auto &currentEdge = e.first;
+        if (edge.end()   == currentEdge.begin() || edge.end()   == currentEdge.end() ||
+            edge.begin() == currentEdge.begin() || edge.begin() == currentEdge.end())
+        {
+          dfs(currentEdge, contour);
+        }
+      }
     }
   }
 
