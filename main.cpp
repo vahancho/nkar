@@ -99,14 +99,27 @@ public:
 
   bool operator<(const Edge &other) const
   {
-    // Sort vertically
-    if (m_begin.y() < other.m_begin.y())
+    if (m_begin.x() < other.m_begin.x())
     {
       return true;
     }
-    else if (m_begin.y() == other.m_begin.y())
+    else if (m_begin.x() == other.m_begin.x())
     {
-      return m_begin.x() < other.m_begin.x();
+      if (m_begin.y() < other.m_begin.y())
+      {
+        return true;
+      }
+      else if (m_begin.y() == other.m_begin.y())
+      {
+        if (m_end.x() < other.m_end.x())
+        {
+          return true;
+        }
+        else if (m_end.x() == other.m_end.x())
+        {
+          return m_end.y() < other.m_end.y();
+        }
+      }
     }
     return false;
   }
