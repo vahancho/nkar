@@ -118,6 +118,13 @@ public:
   {
     assert(idx < pointCount());
 
+    //        0
+    //   +---------+
+    // 3 |         | 1
+    //   |         |
+    //   +---------+
+    //       2
+
     switch (idx)
     {
     case 0:
