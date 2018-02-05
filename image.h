@@ -30,13 +30,23 @@ SOFTWARE.
 
 class Point;
 
-//! Implement an image class associated with a file
+//! Implements an image data representation.
 class Image
 {
 public:
+  //! Default constructor creates an empty image.
+  /*!
+    Empty image has zero dimensions and contains no data.
+  */
+  Image();
+
   //! Constructs an image object and fills it with the image data
   Image(const std::string &file);
 
+  //! Copy constructor
+  Image(const Image &other);
+
+  //! Destructor
   ~Image();
 
   //! Returns the width of the image.
@@ -65,6 +75,9 @@ public:
     \return true on success and false otherwise.
   */
   bool save(const std::string &file) const;
+
+  //! The assignment operator.
+  Image &operator = (const Image &other);
 
 private:
   //! Opens the image file.

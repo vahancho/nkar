@@ -33,6 +33,13 @@ SOFTWARE.
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include "stb_image_write.h"
 
+Image::Image()
+  :
+    m_data(nullptr),
+    m_width(0),
+    m_height(0)
+{}
+
 Image::Image(const std::string &file)
   :
     m_data(nullptr),
@@ -40,6 +47,16 @@ Image::Image(const std::string &file)
     m_height(0)
 {
   open(file);
+}
+
+Image::Image(const Image &other)
+{
+  m_width = other.m_width;
+  m_height = other.m_height;
+
+  const size_t size = m_width * m_height * STBI_rgb;
+  m_data = (unsigned char *)malloc(size);
+  memcpy(m_data, other.m_data, size);
 }
 
 Image::~Image()
@@ -55,13 +72,12 @@ bool Image::open(const std::string &file)
   // QImage image(m_file.c_str());
   // m_data = image.bits();
   // ...
-  int n;
+  int n = 0;
   m_data = stbi_load(file.c_str(), &m_width, &m_height, &n, STBI_rgb);
   if (m_data == nullptr) {
     fprintf(stderr, "Error reading image file %s\n", file.c_str());
     return false;
   }
-  printf("Image (%d, %d), %dbit\n", m_width, m_height, n);
   return true;
 }
 
@@ -138,4 +154,16 @@ bool Image::save(const std::string &file) const
 
   return stbi_write_png(file.c_str(), width(), height(),
                         STBI_rgb, m_data, width() * STBI_rgb) != 0;
+}
+
+Image &Image::operator=(const Image &other)
+{
+  // Delete old data.
+  stbi_image_free(m_data);
+
+  const size_t size = m_width * m_height * STBI_rgb;
+  m_data = (unsigned char *)malloc(size);
+  memcpy(m_data, other.m_data, size);
+
+  return *this;
 }
