@@ -34,16 +34,10 @@ class Point;
 class Image
 {
 public:
-  //! Constructs an image
+  //! Constructs an image object and fills it with the image data
   Image(const std::string &file);
 
   ~Image();
-
-  //! Opens the image file.
-  /*!
-    \return true on success and false otherwise.
-  */
-  bool open();
 
   //! Returns the width of the image.
   /*!
@@ -60,6 +54,9 @@ public:
   //! Returns color of the given image pixel.
   Color pixel(int row, int column) const;
 
+  //! Returns true if image object represents an empty image.
+  bool isNull() const;
+
   //! Draws either a horizontal or vertical line.
   void drawLine(const Point &start, const Point &end, const Color &color);
 
@@ -70,10 +67,16 @@ public:
   bool save(const std::string &file) const;
 
 private:
+  //! Opens the image file.
+  /*!
+    \param file The image file to open.
+    \return true on success and false otherwise.
+  */
+  bool open(const std::string &file);
+
   //! Sets color of the particular pixel.
   void setPixel(int row, int column, const Color &color);
 
-  std::string m_file;
   unsigned char *m_data;
   int m_width;
   int m_height;

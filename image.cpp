@@ -35,18 +35,19 @@ SOFTWARE.
 
 Image::Image(const std::string &file)
   :
-    m_file(file),
     m_data(nullptr),
     m_width(0),
     m_height(0)
-{}
+{
+  open(file);
+}
 
 Image::~Image()
 {
   stbi_image_free(m_data);
 }
 
-bool Image::open()
+bool Image::open(const std::string &file)
 {
   // We use stbi_load() function here to avoid additional dependencies.
   // However it can be replaced with other image readers. For instance QImage
@@ -55,13 +56,18 @@ bool Image::open()
   // m_data = image.bits();
   // ...
   int n;
-  m_data = stbi_load(m_file.c_str(), &m_width, &m_height, &n, STBI_rgb);
+  m_data = stbi_load(file.c_str(), &m_width, &m_height, &n, STBI_rgb);
   if (m_data == nullptr) {
-    fprintf(stderr, "Error reading image file %s\n", m_file.c_str());
+    fprintf(stderr, "Error reading image file %s\n", file.c_str());
     return false;
   }
   printf("Image (%d, %d), %dbit\n", m_width, m_height, n);
   return true;
+}
+
+bool Image::isNull() const
+{
+  return !m_data;
 }
 
 int Image::width() const
@@ -76,6 +82,11 @@ int Image::height() const
 
 Color Image::pixel(int row, int column) const
 {
+  if (isNull())
+  {
+    return Color();
+  }
+
   assert(row < m_height && column < m_width);
 
   auto pos = (row * m_width + column) * STBI_rgb;
@@ -89,6 +100,11 @@ Color Image::pixel(int row, int column) const
 
 void Image::setPixel(int row, int column, const Color &color)
 {
+  if (isNull())
+  {
+    return;
+  }
+
   assert(row < m_height && column < m_width);
 
   auto pos = (row * m_width + column) * STBI_rgb;
@@ -101,6 +117,11 @@ void Image::setPixel(int row, int column, const Color &color)
 //! Draws either a horizontal or vertical line.
 void Image::drawLine(const Point &start, const Point &end, const Color &color)
 {
+  if (isNull())
+  {
+    return;
+  }
+
   for (int c = std::min(start.x(), end.x()); c <= std::max(start.x(), end.x()); ++c) {
     for (int r = std::min(start.y(), end.y()); r <= std::max(start.y(), end.y()); ++r) {
       setPixel(r, c, color);
@@ -110,7 +131,11 @@ void Image::drawLine(const Point &start, const Point &end, const Color &color)
 
 bool Image::save(const std::string &file) const
 {
+  if (isNull())
+  {
+    return false;
+  }
+
   return stbi_write_png(file.c_str(), width(), height(),
                         STBI_rgb, m_data, width() * STBI_rgb) != 0;
-
 }

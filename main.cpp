@@ -302,7 +302,7 @@ int main(int argc, char **argv)
   std::shared_ptr<Image> img1 = std::make_shared<Image>(file1);
   std::shared_ptr<Image> img2 = std::make_shared<Image>(file2);
 
-  if (!img1->open() || !img2->open()) {
+  if (img1->isNull() || !img2->isNull()) {
     return 1;
   }
 
