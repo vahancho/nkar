@@ -23,333 +23,37 @@
 */
 
 #include <string>
-#include <memory>
-#include <algorithm>
-#include <vector>
-#include <set>
-#include <map>
-#include <assert.h>
 
-#include "point.h"
+#include "comparator.h"
 #include "image.h"
-#include "color.h"
 
-class Edge
+enum Status
 {
-public:
-  Edge(const Point &begin, const Point &end)
-    :
-      m_begin(begin),
-      m_end(end)
-  {
-    assert(m_begin < m_end);
-  }
-
-  bool operator<(const Edge &other) const
-  {
-    if (m_begin.x() < other.m_begin.x())
-    {
-      return true;
-    }
-    else if (m_begin.x() == other.m_begin.x())
-    {
-      if (m_begin.y() < other.m_begin.y())
-      {
-        return true;
-      }
-      else if (m_begin.y() == other.m_begin.y())
-      {
-        if (m_end.x() < other.m_end.x())
-        {
-          return true;
-        }
-        else if (m_end.x() == other.m_end.x())
-        {
-          return m_end.y() < other.m_end.y();
-        }
-      }
-    }
-    return false;
-  }
-
-  const Point &begin() const
-  {
-    return m_begin;
-  }
-
-  const Point &end() const
-  {
-    return m_end;
-  }
-
-private:
-  Point m_begin;
-  Point m_end;
-};
-
-//! Implement a scanning rectangle.
-/*!
-  This is a rectangle that moves through the whole image step by step until it
-  reaches the lower right corner of the image. It moves from left to right and
-  from top to bottom - this is scanning order.
-*/
-class ScanRectangle
-{
-public:
-  ScanRectangle(const Point &origin, int width, int height,
-                std::shared_ptr<Image> img1,
-                std::shared_ptr<Image> img2)
-    :
-      m_origin(origin),
-      m_width(width),
-      m_height(height),
-      m_img1(img1),
-      m_img2(img2),
-      m_xLimit(std::min(img1->width(), img2->width())),
-      m_yLimit(std::min(img1->height(), img2->height()))
-  {}
-
-  int pointCount() const
-  {
-    return 4;
-  }
-
-  Edge edge(int idx) const
-  {
-    assert(idx < pointCount());
-
-    //        0
-    //   +---------+
-    // 3 |         | 1
-    //   |         |
-    //   +---------+
-    //       2
-
-    switch (idx)
-    {
-    case 0:
-      return Edge(point(0), point(1));
-    case 1:
-      return Edge(point(1), point(2));
-    case 2:
-      return Edge(point(3), point(2));
-    case 3:
-      return Edge(point(0), point(3));
-    default:
-      // This should never happen.
-      assert(false);
-      return Edge(Point(0,0), Point(0,0));
-    }
-  }
-
-  Point point(int idx) const
-  {
-    assert(idx < pointCount());
-
-    // 0 +---------+ 1
-    //   |         |
-    //   |         |
-    // 3 +---------+ 2
-
-    switch (idx) {
-    case 0:
-      return m_origin;
-    case 1:
-      return Point(std::min(m_origin.x() + m_width, m_xLimit), m_origin.y());
-    case 2:
-      return Point(std::min(m_origin.x() + m_width, m_xLimit),
-                   std::min(m_origin.y() + m_height, m_yLimit));
-    case 3:
-      return Point(m_origin.x(),
-                   std::min(m_origin.y() + m_height, m_yLimit));
-    default:
-      break;
-    }
-    return Point();
-  }
-
-  //! Tests whether this scan rectangle contains a failed pixel.
-  bool test() const
-  {
-    const int cMax = std::min(m_origin.x() + m_width, m_xLimit);
-    const int rMax = std::min(m_origin.y() + m_height, m_yLimit);
-    for (int c = m_origin.x(); c < cMax; c++)
-    {
-      for (int r = m_origin.y(); r < rMax; r++) {
-        Color color1 = m_img1->pixel(r, c);
-        Color color2 = m_img2->pixel(r, c);
-
-        if (color1 != color2) {
-          fprintf(stderr, "Different pixels at (%d, %d)\n", r, c);
-          return false;
-        }
-      }
-    }
-    return true;
-  }
-
-  //! Indicates whether the rectangle reached the end of scanning.
-  bool atEnd() const
-  {
-    return m_origin.x() == 0 &&
-           m_origin.y() >= m_yLimit;
-  }
-
-  //! A pre-increment operator.
-  ScanRectangle &operator++()
-  {
-    if (!atEnd()) {
-      if (m_origin.x() < m_xLimit)
-      {
-        m_origin.x() += m_width;
-      }
-      else if (m_origin.y() < m_yLimit)
-      {
-        // Move to the next row and left most position.
-        m_origin.x() = 0;
-        m_origin.y() += m_height;
-      }
-    }
-
-    return *this;
-  }
-
-  const Point &origin() const
-  {
-    return m_origin;
-  }
-
-private:
-  Point m_origin;
-  int m_width;
-  int m_height;
-  int m_xLimit;
-  int m_yLimit;
-
-  std::shared_ptr<Image> m_img1;
-  std::shared_ptr<Image> m_img2;
-};
-
-class Contours
-{
-public:
-  using Contour = std::vector<Edge>;
-
-  void addRect(const ScanRectangle &rect)
-  {
-    for (int i = 0; i < rect.pointCount(); ++i)
-    {
-      const Edge &edge = rect.edge(i);
-      auto result = m_edges.emplace(edge, false);
-      if (!result.second)
-      {
-        m_edges.erase(result.first);
-      }
-    }
-  }
-
-  std::vector<Contour> contours()
-  {
-    // Find connected components in an undirected graph by using depth-first search
-    // algorithm.
-    std::vector<Contour> contours;
-
-    // Mark all as not visited.
-    for (auto &e : m_edges)
-    {
-      e.second = false;
-    }
-
-    for (const auto &e : m_edges)
-    {
-      if (!e.second)
-      {
-        contours.emplace_back();
-        printf("Contour %d\n", contours.size());
-        // print all reachable edges from edge
-        dfs(e.first, contours.back());
-      }
-    }
-    return contours;
-  }
-
-private:
-  void dfs(const Edge &edge, std::vector<Edge> &contour)
-  {
-    // Mark the current edge as visited and save it
-    m_edges[edge] = true;
-    contour.emplace_back(edge);
-
-    printf("\tedge (%d, %d)(%d, %d)\n", edge.begin().x(), edge.begin().y(),
-                                        edge.end().x(), edge.end().y());
-
-    // Recur for all the edges adjacent to this edge
-    for (const auto &e : m_edges)
-    {
-      if (!e.second)
-      {
-        const auto &currentEdge = e.first;
-        if (edge.end()   == currentEdge.begin() || edge.end()   == currentEdge.end() ||
-            edge.begin() == currentEdge.begin() || edge.begin() == currentEdge.end())
-        {
-          dfs(currentEdge, contour);
-        }
-      }
-    }
-  }
-
-  std::map<Edge, bool> m_edges;
+  Ok,
+  ComparisonError,
+  Difference
 };
 
 int main(int argc, char **argv)
 {
-  std::string file1("d:/test1.png");
-  std::string file2("d:/test2.png");
+  auto result = Comparator::compare("d:/test1.png", "d:/test2.png");
 
-  std::shared_ptr<Image> img1 = std::make_shared<Image>(file1);
-  std::shared_ptr<Image> img2 = std::make_shared<Image>(file2);
-
-  if (img1->isNull() || !img2->isNull()) {
-    return 1;
-  }
-
-  if (img1->width() != img2->width() || img1->height() != img2->height()) {
-    fprintf(stderr, "Images have different dimensions\n");
-    return 1;
-  }
-
-  Point origin{0, 0}; // Start scanning from the upper left corner.
-  ScanRectangle sr(origin, 15, 15, img1, img2);
-  std::vector<ScanRectangle> failedRects;
-  while (!sr.atEnd()) {
-    if (!sr.test()) {
-      failedRects.emplace_back(sr);
-    }
-    ++sr;
-  }
-
-  Contours contours;
-  for (const auto &rect : failedRects) {
-    contours.addRect(rect);
-  }
-
-  // Draw red line for each edge.
-  static const Color highlightColor{ 255, 0, 0 };
-
-  const auto &cont = contours.contours();
-  printf("found %d contour(s)\n", cont.size());
-
-  for (size_t i = 0; i < cont.size(); ++i)
+  if (result.error() != Result::Error::NoError)
   {
-    const auto &contour = cont[i];
-    for (const auto &edge : contour)
-    {
-      img2->drawLine(edge.begin(), edge.end(), highlightColor);
+    fprintf(stderr, "%s\n", result.errorMessage().c_str());
+    return Status::ComparisonError;
+  }
+
+  if (result.status() == Result::Status::Different)
+  {
+    if (result.resultImage().save("d:/res.png")) {
+      return Status::Difference;
+    } else {
+      fprintf(stdout, "Failed to save result image\n");
+      return Status::ComparisonError;
     }
   }
 
-  const std::string outFile("d:/res.png");
-  bool saved = img2->save(outFile);
-
-  return 0;
+  fprintf(stdout, "Images are identical\n");
+  return Status::Ok;
 }
