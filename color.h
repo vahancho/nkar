@@ -29,15 +29,18 @@ SOFTWARE.
 class Color
 {
 public:
-  //! Construct a color object.
+  //! Constructs an invalid color with the RGB value (0, 0, 0).
+  Color();
+
+  //! Constructs a color with the RGB value \p red, \p green, \p blue.
   /*
     A color is normally specified in terms of RGB (red, green, and blue) components.
   */
-  Color(int red, int green, int blue);
+  Color(int red , int green, int blue);
 
   //! Compares two colors.
   /*!
-    Colors are equal if their all components are equal.
+    Colors are equal if their all RGB components are equal.
   */
   bool operator!=(const Color &other);
 
@@ -55,6 +58,5 @@ private:
   int m_green;
   int m_blue;
 };
-
 
 #endif // COLOR_H

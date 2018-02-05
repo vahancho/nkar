@@ -24,6 +24,14 @@ SOFTWARE.
 
 #include "color.h"
 
+Color::Color()
+  :
+    m_red(0),
+    m_green(0),
+    m_blue(0)
+{
+}
+
 Color::Color(int r, int g, int b)
   :
     m_red(r),
