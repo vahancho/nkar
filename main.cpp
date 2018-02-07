@@ -31,12 +31,24 @@ enum Status
 {
   Ok,
   ComparisonError,
-  Difference
+  Difference,
+  IncorrectOptions
 };
+
+static void printUsage()
+{
+  printf("Usage: comparator file1 file2 output_file\n");
+}
 
 int main(int argc, char **argv)
 {
-  auto result = nkar::Comparator::compare("d:/test1.png", "d:/test2.png");
+  if (argc != 4)
+  {
+    printUsage();
+    return IncorrectOptions;
+  }
+
+  auto result = nkar::Comparator::compare(argv[1], argv[2]);
 
   if (result.error() != nkar::Result::Error::NoError)
   {
@@ -46,7 +58,8 @@ int main(int argc, char **argv)
 
   if (result.status() == nkar::Result::Status::Different)
   {
-    if (result.resultImage().save("d:/res.png")) {
+    if (result.resultImage().save(argv[3]))
+    {
       return Status::Difference;
     } else {
       fprintf(stdout, "Failed to save result image\n");
