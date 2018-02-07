@@ -161,6 +161,9 @@ Image &Image::operator=(const Image &other)
   // Delete old data.
   stbi_image_free(m_data);
 
+  m_width = other.m_width;
+  m_height = other.m_height;
+
   const size_t size = m_width * m_height * STBI_rgb;
   m_data = (unsigned char *)malloc(size);
   memcpy(m_data, other.m_data, size);
