@@ -68,11 +68,18 @@ public:
   //! Sets the result image.
   void setResultImage(const Image &image);
 
+  //! Returns the number of difference contours.
+  int contourCount() const;
+
+  //! Set the number of difference contours.
+  void setContourCount(int count);
+
 private:
   Status m_status;
   Error m_error;
   std::string m_errorMessage;
   Image m_result;
+  int m_contourCount;
 };
 
 //! The class performs comparison of two images and outputs result of comparison.

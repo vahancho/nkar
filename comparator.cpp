@@ -280,7 +280,8 @@ Result::Result(Result::Status diff, Result::Error error, const std::string &erro
   :
     m_status(diff),
     m_error(error),
-    m_errorMessage(errorMessage)
+    m_errorMessage(errorMessage),
+    m_contourCount(0)
 {}
 
 Result::Status Result::status() const
@@ -306,6 +307,16 @@ const Image &Result::resultImage() const
 void Result::setResultImage(const Image &image)
 {
   m_result = image;
+}
+
+int Result::contourCount() const
+{
+  return m_contourCount;
+}
+
+void Result::setContourCount(int count)
+{
+  m_contourCount = count;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -353,6 +364,7 @@ Result Comparator::compare(const Image &image1, const Image &image2)
 
     Result result(Result::Status::Different, Result::Error::NoError);
     result.setResultImage(output);
+    result.setContourCount(cont.size());
     return result;
   }
 
