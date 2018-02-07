@@ -22,8 +22,11 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef COLOR_H
-#define COLOR_H
+#ifndef _COLOR_H_
+#define _COLOR_H_
+
+namespace nkar
+{
 
 //! Implements an RGB based color
 class Color
@@ -36,7 +39,7 @@ public:
   /*
     A color is normally specified in terms of RGB (red, green, and blue) components.
   */
-  Color(int red , int green, int blue);
+  Color(int red, int green, int blue);
 
   //! Compares two colors.
   /*!
@@ -59,4 +62,6 @@ private:
   int m_blue;
 };
 
-#endif // COLOR_H
+}
+
+#endif // _COLOR_H_

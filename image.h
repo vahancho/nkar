@@ -22,11 +22,14 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef IMAGE_H
-#define IMAGE_H
+#ifndef _IMAGE_H_
+#define _IMAGE_H_
 
 #include <string>
 #include "color.h"
+
+namespace nkar
+{
 
 class Point;
 
@@ -95,4 +98,6 @@ private:
   int m_height;
 };
 
-#endif // IMAGE_H
+}
+
+#endif // _IMAGE_H_

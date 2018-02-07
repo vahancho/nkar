@@ -22,11 +22,14 @@
   SOFTWARE.
 */
 
-#ifndef COMPARATOR_H
-#define COMPARATOR_H
+#ifndef _COMPARATOR_H_
+#define _COMPARATOR_H_
 
 #include <string>
 #include "image.h"
+
+namespace nkar
+{
 
 //! Implements image comparison result.
 class Result
@@ -82,4 +85,6 @@ public:
   static Result compare(const Image &image1, const Image &image2);
 };
 
-#endif // COMPARATOR_H
+}
+
+#endif // _COMPARATOR_H_

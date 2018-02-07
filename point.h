@@ -22,19 +22,22 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef POINT_H
-#define POINT_H
+#ifndef _POINT_H_
+#define _POINT_H_
+
+namespace nkar
+{
 
 //! Implements a point in 2D space.
 class Point
 {
 public:
-  //! Contructs a point object with the integer coordinates.
+  //! Constructs a point object with the integer coordinates.
   Point(int x = 0, int y = 0);
 
   //! Compares two points.
   /*!
-    Points are equal if thay have the same coordinates.
+    Points are equal if they have the same coordinates.
   */
   bool operator==(const Point &other) const;
 
@@ -61,4 +64,6 @@ private:
   int m_y;
 };
 
-#endif // POINT_H
+}
+
+#endif // _POINT_H_

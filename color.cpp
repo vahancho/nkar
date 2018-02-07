@@ -24,13 +24,15 @@ SOFTWARE.
 
 #include "color.h"
 
+namespace nkar
+{
+
 Color::Color()
   :
     m_red(0),
     m_green(0),
     m_blue(0)
-{
-}
+{}
 
 Color::Color(int r, int g, int b)
   :
@@ -59,4 +61,6 @@ int Color::green() const
 int Color::blue() const
 {
   return m_blue;
+}
+
 }

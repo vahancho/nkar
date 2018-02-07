@@ -33,6 +33,9 @@ SOFTWARE.
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include "stb_image_write.h"
 
+namespace nkar
+{
+
 Image::Image()
   :
     m_data(nullptr),
@@ -98,8 +101,7 @@ int Image::height() const
 
 Color Image::pixel(int row, int column) const
 {
-  if (isNull())
-  {
+  if (isNull()) {
     return Color();
   }
 
@@ -107,17 +109,16 @@ Color Image::pixel(int row, int column) const
 
   auto pos = (row * m_width + column) * STBI_rgb;
 
-  auto red = m_data[pos];
+  auto red   = m_data[pos];
   auto green = m_data[pos + 1];
-  auto blue = m_data[pos + 2];
+  auto blue  = m_data[pos + 2];
 
   return{ red, green, blue };
 }
 
 void Image::setPixel(int row, int column, const Color &color)
 {
-  if (isNull())
-  {
+  if (isNull()) {
     return;
   }
 
@@ -133,8 +134,7 @@ void Image::setPixel(int row, int column, const Color &color)
 //! Draws either a horizontal or vertical line.
 void Image::drawLine(const Point &start, const Point &end, const Color &color)
 {
-  if (isNull())
-  {
+  if (isNull()) {
     return;
   }
 
@@ -166,4 +166,6 @@ Image &Image::operator=(const Image &other)
   memcpy(m_data, other.m_data, size);
 
   return *this;
+}
+
 }

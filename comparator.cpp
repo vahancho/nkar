@@ -30,6 +30,9 @@
 #include "comparator.h"
 #include "point.h"
 
+namespace nkar
+{
+
 class Edge
 {
 public:
@@ -43,24 +46,15 @@ public:
 
   bool operator<(const Edge &other) const
   {
-    if (m_begin.x() < other.m_begin.x())
-    {
+    if (m_begin.x() < other.m_begin.x()) {
       return true;
-    }
-    else if (m_begin.x() == other.m_begin.x())
-    {
-      if (m_begin.y() < other.m_begin.y())
-      {
+    } else if (m_begin.x() == other.m_begin.x()) {
+      if (m_begin.y() < other.m_begin.y()) {
         return true;
-      }
-      else if (m_begin.y() == other.m_begin.y())
-      {
-        if (m_end.x() < other.m_end.x())
-        {
+      } else if (m_begin.y() == other.m_begin.y()) {
+        if (m_end.x() < other.m_end.x()) {
           return true;
-        }
-        else if (m_end.x() == other.m_end.x())
-        {
+        } else if (m_end.x() == other.m_end.x()) {
           return m_end.y() < other.m_end.y();
         }
       }
@@ -346,15 +340,12 @@ Result Comparator::compare(const Image &image1, const Image &image2)
   const auto &cont = contours.contours();
   printf("found %d contour(s)\n", cont.size());
 
-  if (cont.size() > 0)
-  {
+  if (cont.size() > 0) {
     Image output = image2;
 
-    for (size_t i = 0; i < cont.size(); ++i)
-    {
+    for (size_t i = 0; i < cont.size(); ++i) {
       const auto &contour = cont[i];
-      for (const auto &edge : contour)
-      {
+      for (const auto &edge : contour) {
         // Draw red line for each edge.
         static const Color highlightColor{ 255, 0, 0 };
         output.drawLine(edge.begin(), edge.end(), highlightColor);
@@ -375,4 +366,6 @@ Result Comparator::compare(const std::string &file1, const std::string &file2)
   Image img2(file2);
 
   return compare(img1, img2);
+}
+
 }

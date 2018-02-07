@@ -24,6 +24,9 @@ SOFTWARE.
 
 #include "point.h"
 
+namespace nkar
+{
+
 Point::Point(int x, int y)
   :
     m_x(x),
@@ -63,4 +66,6 @@ int & Point::x()
 int & Point::y()
 {
   return m_y;
+}
+
 }

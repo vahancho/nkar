@@ -36,15 +36,15 @@ enum Status
 
 int main(int argc, char **argv)
 {
-  auto result = Comparator::compare("d:/test1.png", "d:/test2.png");
+  auto result = nkar::Comparator::compare("d:/test1.png", "d:/test2.png");
 
-  if (result.error() != Result::Error::NoError)
+  if (result.error() != nkar::Result::Error::NoError)
   {
     fprintf(stderr, "%s\n", result.errorMessage().c_str());
     return Status::ComparisonError;
   }
 
-  if (result.status() == Result::Status::Different)
+  if (result.status() == nkar::Result::Status::Different)
   {
     if (result.resultImage().save("d:/res.png")) {
       return Status::Difference;
