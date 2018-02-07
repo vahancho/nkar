@@ -45,8 +45,9 @@ public:
 
   enum class Error
   {
-    NoError,   //! No error detected.
-    ImageError //! Error in input images.
+    NoError,            //! No error detected.
+    InvalidImage,       //! Error in input images.
+    DifferentDimensions //! Images have different dimensions.
   };
 
   //! Constructs a result object with the given \p status \p error and \p errorMessage if any.

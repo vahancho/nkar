@@ -313,12 +313,12 @@ void Result::setResultImage(const Image &image)
 Result Comparator::compare(const Image &image1, const Image &image2)
 {
   if (image1.isNull() || image2.isNull()) {
-    return Result(Result::Status::Unknown, Result::Error::ImageError,
+    return Result(Result::Status::Unknown, Result::Error::InvalidImage,
                   "Invalid image provided");
   }
 
   if (image1.width() != image2.width() || image1.height() != image2.height()) {
-    return Result(Result::Status::Unknown, Result::Error::ImageError,
+    return Result(Result::Status::Unknown, Result::Error::DifferentDimensions,
                   "Images have different dimensions");
   }
 
@@ -338,7 +338,6 @@ Result Comparator::compare(const Image &image1, const Image &image2)
   }
 
   const auto &cont = contours.contours();
-  printf("found %d contour(s)\n", cont.size());
 
   if (cont.size() > 0) {
     Image output = image2;
