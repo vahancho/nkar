@@ -210,6 +210,8 @@ public:
   }
 
 private:
+  ScanRectangle& operator=(const ScanRectangle&) = delete;
+
   Point m_origin;
   int m_width;
   int m_height;
