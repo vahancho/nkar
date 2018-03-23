@@ -33,6 +33,11 @@
 namespace nkar
 {
 
+// Default width and height of the scan rectangle. Each of parameters should be
+// greater or equal to one. Smaller values correspond to the preciser and slower calculations.
+static const int scanRectWidth = 1;  // The highest precision
+static const int scanRectHeight = 1; // The highest precision
+
 class Edge
 {
 public:
@@ -334,7 +339,7 @@ Result Comparator::compare(const Image &image1, const Image &image2)
   }
 
   Point origin{ 0, 0 }; // Start scanning from the upper left corner.
-  ScanRectangle sr(origin, 15, 15, image1, image2);
+  ScanRectangle sr(origin, scanRectWidth, scanRectHeight, image1, image2);
   std::vector<ScanRectangle> failedRects;
   while (!sr.atEnd()) {
     if (!sr.test()) {
