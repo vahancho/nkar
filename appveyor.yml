@@ -1,0 +1,34 @@
+# version string format
+version: "{build}"
+
+image: Visual Studio 2013
+  
+# clone directory
+clone_folder: C:\projects\nkar
+
+init:
+    - git config --global core.autocrlf input
+  
+# branches to build
+branches:
+    # whitelist
+    only:
+        - master
+
+platform:
+    - Win32
+    - x64
+
+# build Configurations, i.e. Debug, Release, etc.
+configuration:
+    - Debug
+    - Release
+
+build_script:
+    - call "c:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\vcvarsall.bat" x86
+    - cd C:\projects\nkar\test
+    - cl /I..\src /W4 /EHsc main.cpp /link /out:test.exe
+
+test_script:
+    - cd C:\projects\nkar\test
+    - test.exe C:/projects/nkar/test/images/
