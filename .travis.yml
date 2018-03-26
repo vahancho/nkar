@@ -5,5 +5,5 @@ compiler:
   - gcc
 
 script:
-    - g++ -std=c++11 -I../src test/main.cpp -o test_app
+    - g++ -std=c++11 -Isrc test/main.cpp -o test_app
     - ./test_app
