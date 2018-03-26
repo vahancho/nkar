@@ -6,4 +6,4 @@ compiler:
 
 script:
     - g++ -std=c++11 -Isrc test/main.cpp -o test_app
-    - ./test_app
+    - ./test_app `pwd`/images
