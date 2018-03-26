@@ -63,14 +63,14 @@ commands from the terminal, assuming that compiler and environment are already c
 ```
 cd test
 g++ -std=c++11 -I../src main.cpp -o test
-./test
+./test `pwd`/images/
 ```
 
 ##### Windows
 ```
 cd test
 cl /W4 /I../srs /EHsc main.cpp /link /out:test.exe
-test
+test "%cd%"\images\
 ```
 
 ### Examples
