@@ -1,12 +1,14 @@
 # Nkar image comparison and differences highlighting API (C++)
-Nkar is an image processing and comparison utility. It uses pixel-to-pixel comparison of two images of the same size to identify their differences and generate contours to highlights the different areas.
+Nkar (armenian: նկար) is an image processing and comparison utility. The comparison of two images of the same size based on comparing each pixel of one image with the corresponding pixel of another one. After all differences are identified, algorithm generates contours of the areas of differences. These contours (polygons) used to highlight the differences.
+
+According to [stb single-file public domain libraries](https://github.com/nothings/stb) we use for image loading/decoding/saving the following image formats are supported: JPG, PNG, TGA, BMP, PSD, GIF, HDR, PIC.
 
 [![Build Status](https://travis-ci.org/vahancho/nkar.svg?branch=master)](https://travis-ci.org/vahancho/nkar)
 [![Build status](https://ci.appveyor.com/api/projects/status/gh9v3ynrm1dt1w7t/branch/master?svg=true)](https://ci.appveyor.com/project/vahancho/nkar/branch/master)
 
 ### Installation
 
-No installation required. Just compile *color.h(.cpp), image.h(.cpp), point.h(.cpp) and comparator.h(.cpp)* in your project and use `nkar::Comparator` class to compare two images.
+No installation required. Just copy and compile *color.h(.cpp), image.h(.cpp), point.h(.cpp) and comparator.h(.cpp)* from the src/ directory in your project and use `nkar::Comparator` class to compare two images.
 
 ### Prerequisites
 
