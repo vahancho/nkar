@@ -99,8 +99,8 @@ public:
     m_height(height),
     m_img1(img1),
     m_img2(img2),
-    m_xLimit(std::min(img1.width(), img2.width())),
-    m_yLimit(std::min(img1.height(), img2.height()))
+    m_xLimit(std::min(img1.width() - 1, img2.width() - 1)),
+    m_yLimit(std::min(img1.height() - 1, img2.height() - 1))
   {}
 
   int pointCount() const
