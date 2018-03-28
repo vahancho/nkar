@@ -40,6 +40,7 @@ bool test(const std::string &img1, const std::string img2, const std::string &tm
           const std::string &baseline)
 {
   auto result = nkar::Comparator::compare(img1, img2);
+  fprintf(stdout, "Images are different. %d contours found\n", result.contourCount());
   // Temporarily save the resulting image.
   result.resultImage().save(tmpImg);
 
@@ -63,9 +64,46 @@ int main(int argc, char **argv)
     return Status::Fail;
   }
 
+  // Color test.
+  nkar::Color color;
+  if (color.red() != 0 || color.green() != 0 || color.blue() != 0)
+  {
+    fprintf(stderr, "Incorrect default constructed color\n");
+    return Status::Fail;
+  }
+
   const std::string imagePath(argv[1]);
   const std::string tmpImg(imagePath + "tmp.png");
 
+  {
+    // Negative tests
+    auto result = nkar::Comparator::compare(imagePath + "empty.png", "foo");
+    fprintf(stdout, "Expected error: %s\n", result.errorMessage().c_str());
+    if (result.error() != nkar::Result::Error::InvalidImage)
+    {
+      return Status::Fail;
+    }
+  }
+  {
+    // Negative tests
+    auto result = nkar::Comparator::compare("foo", imagePath + "empty.png");
+    fprintf(stdout, "Expected error: %s\n", result.errorMessage().c_str());
+    if (result.error() != nkar::Result::Error::InvalidImage)
+    {
+      return Status::Fail;
+    }
+  }
+  {
+    // Negative tests
+    auto result = nkar::Comparator::compare(imagePath + "lenna.png", imagePath + "empty.png");
+    fprintf(stdout, "Expected error: %s\n", result.errorMessage().c_str());
+    if (result.error() != nkar::Result::Error::DifferentDimensions)
+    {
+      return Status::Fail;
+    }
+  }
+
+  // Images
   for (int i = 1; i < 14; ++i) {
     const std::string baseline(imagePath + std::to_string(i) + "_result.png");
     if (!test(imagePath + "empty.png", imagePath + std::to_string(i) + ".png",
