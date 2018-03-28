@@ -3,7 +3,10 @@ sudo: require
 language: cpp
 compiler:
   - gcc
-
+before_install:
+  - pip install --user cpp-coveralls
 script:
-    - g++ -std=c++11 -Isrc test/main.cpp -o test_app
+    - g++ -std=c++11 -coverage -Isrc test/main.cpp -o test_app
     - ./test_app `pwd`/test/images/
+after_success:
+  - coveralls --verbose -E .+/stb_.+
