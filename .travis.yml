@@ -9,4 +9,4 @@ script:
     - g++ -std=c++11 -coverage -Isrc test/main.cpp -o test_app
     - ./test_app `pwd`/test/images/
 after_success:
-  - coveralls --verbose 
+  - coveralls --verbose -E src/stb_image.h -E src/stb_image_write.h
