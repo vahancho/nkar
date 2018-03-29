@@ -44,7 +44,7 @@ bool test(const std::string &img1, const std::string img2, const std::string &tm
   auto result = nkar::Comparator::compare(img1, img2);
   auto end = std::chrono::high_resolution_clock::now();
 
-  printf("comparison duration: %I64d ms.\n",
+  printf("comparison duration: %d ms.\n",
          std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count());
 
   fprintf(stdout, "Images are different. %d contours found\n", result.contourCount());
