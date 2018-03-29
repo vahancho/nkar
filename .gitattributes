@@ -1,4 +1,2 @@
-* linguist-vendored
-
 # Ignore these files
-src/stb_image* linguist-vendored=false
+src/stb_image* linguist-vendored
