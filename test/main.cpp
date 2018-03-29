@@ -24,6 +24,7 @@
 
 #include <string>
 #include <cstdio>
+#include <chrono>
 
 #include "comparator.cpp"
 #include "image.cpp"
@@ -39,7 +40,13 @@ enum Status
 bool test(const std::string &img1, const std::string img2, const std::string &tmpImg,
           const std::string &baseline)
 {
+  auto start = std::chrono::high_resolution_clock::now();
   auto result = nkar::Comparator::compare(img1, img2);
+  auto end = std::chrono::high_resolution_clock::now();
+
+  printf("comparison duration: %I64d ms.\n",
+         std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count());
+
   fprintf(stdout, "Images are different. %d contours found\n", result.contourCount());
   // Temporarily save the resulting image.
   result.resultImage().save(tmpImg);
