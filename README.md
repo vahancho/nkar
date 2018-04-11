@@ -1,4 +1,4 @@
-# Nkar image comparison and differences highlighting API (C++)
+# Nkar image comparison and differences highlighting C++ API
 Nkar (armenian: նկար) is an image processing and comparison utility. The comparison of two images of the same size based on comparing each pixel of one image with the corresponding pixel of another one. After all differences are identified, algorithm generates contours (polygons) that outlines the differences. The API provides both error reporting and differences analysis. For instance results contains information on the number of difference countours generated (see usage example below).
 
 According to [stb single-file public domain libraries](https://github.com/nothings/stb) we use for image loading/decoding/saving the following image formats are supported: JPG, PNG, TGA, BMP, PSD, GIF, HDR, PIC.
