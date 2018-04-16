@@ -84,6 +84,7 @@ Below are some examples of image comparison with results. Third image in each ro
 
 | expected | actual | diff with contours |
 | --- | --- | --- |
+| <img src="./test/images/map1.png" width="200"> | <img src="./test/images/map2.png" width="200"> | <img src="./test/images/map_result.png" width="200"> |
 | ![](./test/images/empty.png) | ![](./test/images/13.png) | ![1diff](./test/images/13_result.png) |
 | ![](./test/images/lenna.png) | ![](./test/images/lenna_changed.png) | ![1diff](./test/images/lenna_result.png) |
 
