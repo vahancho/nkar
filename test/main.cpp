@@ -127,5 +127,12 @@ int main(int argc, char **argv)
     return Status::Fail;
   }
 
+  // Maps
+  if (!test(imagePath + "map1.png", imagePath + "map2.png", tmpImg,
+            imagePath + "map_result.png"))
+  {
+    return Status::Fail;
+  }
+
   return Status::Ok;
 }
