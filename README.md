@@ -26,6 +26,8 @@ For more details see the CI badges (*Travis CI & AppVeyor CI*).
 #include "comparator.h"
 #include "image.h"
 
+using namespace nkar;
+
 int main(int argc, char **argv)
 {
   if (argc != 4) {
@@ -34,15 +36,15 @@ int main(int argc, char **argv)
   }
 
   // Compare two image files.
-  auto result = nkar::Comparator::compare(argv[1], argv[2]);
+  auto result = Comparator::compare(argv[1], argv[2]);
 
-  if (result.error() != nkar::Result::Error::NoError) {
+  if (result.error() != Result::Error::NoError) {
     // An error occurred during comparison.
     fprintf(stderr, "%s\n", result.errorMessage().c_str());
     return -1;
   }
 
-  if (result.status() == nkar::Result::Status::Different) {
+  if (result.status() == Result::Status::Different) {
     if (result.resultImage().save(argv[3])) {
       fprintf(stdout, "Images are different: %d contours found. Image with highlighting is saved to '%s'\n",
               result.contourCount(), argv[3]);
