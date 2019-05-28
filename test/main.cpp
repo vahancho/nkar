@@ -22,6 +22,7 @@
 *  SOFTWARE.                                                                      *
 ***********************************************************************************/
 
+#include <iostream>
 #include <string>
 #include <cstdio>
 #include <chrono>
@@ -44,8 +45,9 @@ bool test(const std::string &img1, const std::string img2, const std::string &tm
   auto result = nkar::Comparator::compare(img1, img2);
   auto end = std::chrono::high_resolution_clock::now();
 
-  printf("comparison duration: %lld ms.\n",
-         std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count());
+  std::cout << "comparison duration: "
+            << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count()
+            << "ms.\n";
 
   fprintf(stdout, "Images are different. %zd contours found\n", result.contourCount());
   // Temporarily save the resulting image.
@@ -55,8 +57,7 @@ bool test(const std::string &img1, const std::string img2, const std::string &tm
   result = nkar::Comparator::compare(baseline, tmpImg);
   if (result.status() != nkar::Result::Status::Identical ||
       result.error()  != nkar::Result::Error::NoError) {
-    fprintf(stderr, "Comparison of '%s' and '%s' failed\n", tmpImg.c_str(),
-            baseline.c_str());
+    std::cerr << "Comparison of '" << tmpImg << "' and '" << baseline << "' failed\n";
     return false;
   }
 
@@ -75,17 +76,16 @@ int main(int argc, char **argv)
   nkar::Color color;
   if (color.red() != 0 || color.green() != 0 || color.blue() != 0)
   {
-    fprintf(stderr, "Incorrect default constructed color\n");
+    std::cerr << "Incorrect default constructed color\n";
     return Status::Fail;
   }
 
   const std::string imagePath(argv[1]);
   const std::string tmpImg(imagePath + "tmp.png");
-
   {
     // Negative tests
     auto result = nkar::Comparator::compare(imagePath + "empty.png", "foo");
-    fprintf(stdout, "Expected error: %s\n", result.errorMessage().c_str());
+    std::cout << "Expected error: " << result.errorMessage() << '\n';
     if (result.error() != nkar::Result::Error::InvalidImage)
     {
       return Status::Fail;
@@ -94,7 +94,7 @@ int main(int argc, char **argv)
   {
     // Negative tests
     auto result = nkar::Comparator::compare("foo", imagePath + "empty.png");
-    fprintf(stdout, "Expected error: %s\n", result.errorMessage().c_str());
+    std::cout << "Expected error: " << result.errorMessage() << '\n';
     if (result.error() != nkar::Result::Error::InvalidImage)
     {
       return Status::Fail;
@@ -103,7 +103,7 @@ int main(int argc, char **argv)
   {
     // Negative tests
     auto result = nkar::Comparator::compare(imagePath + "lenna.png", imagePath + "empty.png");
-    fprintf(stdout, "Expected error: %s\n", result.errorMessage().c_str());
+    std::cout << "Expected error: " << result.errorMessage() << '\n';
     if (result.error() != nkar::Result::Error::DifferentDimensions)
     {
       return Status::Fail;
