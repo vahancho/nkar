@@ -44,10 +44,10 @@ bool test(const std::string &img1, const std::string img2, const std::string &tm
   auto result = nkar::Comparator::compare(img1, img2);
   auto end = std::chrono::high_resolution_clock::now();
 
-  printf("comparison duration: %d ms.\n",
+  printf("comparison duration: %lld ms.\n",
          std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count());
 
-  fprintf(stdout, "Images are different. %d contours found\n", result.contourCount());
+  fprintf(stdout, "Images are different. %zd contours found\n", result.contourCount());
   // Temporarily save the resulting image.
   result.resultImage().save(tmpImg);
 

@@ -316,12 +316,12 @@ void Result::setResultImage(const Image &image)
   m_result = image;
 }
 
-int Result::contourCount() const
+size_t Result::contourCount() const
 {
   return m_contourCount;
 }
 
-void Result::setContourCount(int count)
+void Result::setContourCount(size_t count)
 {
   m_contourCount = count;
 }
