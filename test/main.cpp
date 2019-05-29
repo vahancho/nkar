@@ -49,7 +49,7 @@ bool test(const std::string &img1, const std::string img2, const std::string &tm
             << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count()
             << "ms.\n";
 
-  fprintf(stdout, "Images are different. %zd contours found\n", result.contourCount());
+  std::cout << "Images are different. " << result.contourCount() << " contours found\n";
   // Temporarily save the resulting image.
   result.resultImage().save(tmpImg);
 
