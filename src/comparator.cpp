@@ -25,7 +25,9 @@
 #include <vector>
 #include <map>
 #include <algorithm>
-#include <assert.h>
+#include <cassert>
+#include <stack>
+#include <set>
 
 #include "comparator.h"
 #include "point.h"
@@ -64,6 +66,7 @@ public:
         }
       }
     }
+
     return false;
   }
 
@@ -77,9 +80,20 @@ public:
     return m_end;
   }
 
+  bool visited() const
+  {
+    return m_visited;
+  }
+
+  void setVisited()
+  {
+    m_visited = true;
+  }
+
 private:
   Point m_begin;
   Point m_end;
+  bool m_visited{ false };
 };
 
 //! Implement a scanning rectangle.
@@ -231,54 +245,63 @@ public:
   {
     for (int i = 0; i < rect.pointCount(); ++i) {
       const Edge &edge = rect.edge(i);
-      auto result = m_edges.emplace(edge, false);
+      auto result = m_uniqueEdges.emplace(edge);
       if (!result.second) {
-        m_edges.erase(result.first);
+        m_uniqueEdges.erase(result.first);
       }
     }
   }
 
-  std::vector<Contour> contours()
+  std::vector<Contour> makeContours()
   {
     // Find connected components in an undirected graph by using depth-first search
     // algorithm.
     std::vector<Contour> contours;
 
-    // Mark all as not visited.
-    for (auto &e : m_edges) {
-      e.second = false;
-    }
+    std::vector<Edge> edges(m_uniqueEdges.begin(), m_uniqueEdges.end());
 
-    for (const auto &e : m_edges) {
-      if (!e.second) {
+    for (auto &e : edges) {
+      if (!e.visited()) {
         contours.emplace_back();
         // print all reachable edges from edge
-        dfs(e.first, contours.back());
+        dfs(e, edges, contours.back());
       }
     }
     return contours;
   }
 
 private:
-  void dfs(const Edge &edge, std::vector<Edge> &contour)
+  void dfs(Edge &edge, std::vector<Edge> &edges, std::vector<Edge> &contour)
   {
-    // Mark the current edge as visited and save it
-    m_edges[edge] = true;
-    contour.emplace_back(edge);
+    std::stack<Edge *> stack;
+    stack.push(&edge);
 
-    // Recur for all the edges adjacent to this edge
-    for (const auto &e : m_edges) {
-      if (!e.second) {
-        const auto &currentEdge = e.first;
-        if (edge.end() == currentEdge.begin() || edge.end() == currentEdge.end() ||
-            edge.begin() == currentEdge.begin() || edge.begin() == currentEdge.end()) {
-          dfs(currentEdge, contour);
+    while (!stack.empty()) {
+      auto e = stack.top();
+      stack.pop();
+
+      if (e->visited()) {
+        continue;
+      }
+
+      // Mark the current edge as visited and save it
+      e->setVisited();
+      contour.emplace_back(*e);
+
+      // Find all edges adjacent to this edge
+      for (auto &currentEdge : edges) {
+        if (!currentEdge.visited()) {
+          if (e->end()   == currentEdge.begin() || e->end()   == currentEdge.end() ||
+              e->begin() == currentEdge.begin() || e->begin() == currentEdge.end())
+          {
+            stack.push(&currentEdge);
+          }
         }
       }
     }
   }
 
-  std::map<Edge, bool> m_edges;
+  std::set<Edge> m_uniqueEdges;
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -342,20 +365,15 @@ Result Comparator::compare(const Image &image1, const Image &image2)
 
   Point origin{ 0, 0 }; // Start scanning from the upper left corner.
   ScanRectangle sr(origin, scanRectWidth, scanRectHeight, image1, image2);
-  std::vector<ScanRectangle> failedRects;
+  Contours contours;
   while (!sr.atEnd()) {
     if (!sr.test()) {
-      failedRects.emplace_back(sr);
+      contours.addRect(sr);
     }
     ++sr;
   }
 
-  Contours contours;
-  for (const auto &rect : failedRects) {
-    contours.addRect(rect);
-  }
-
-  const auto &cont = contours.contours();
+  const auto &cont = contours.makeContours();
 
   if (cont.size() > 0) {
     Image output = image2;
