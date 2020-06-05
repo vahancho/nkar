@@ -9,4 +9,5 @@ script:
     - g++ -std=c++11 -coverage -Isrc test/main.cpp -o test_app
     - ./test_app `pwd`/test/images/
 after_success:
+  - bash <(curl -s https://codecov.io/bash) -v
   - coveralls --verbose -E .+/stb_.+
