@@ -1,0 +1,3 @@
+ignore:
+  - test # Ignore test folder and all its contents
+  - stb_image*
