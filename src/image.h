@@ -27,6 +27,7 @@
 
 #include <string>
 #include "color.h"
+#include "export.h"
 
 namespace nkar
 {
@@ -34,7 +35,7 @@ namespace nkar
 class Point;
 
 //! Implements an image data representation.
-class Image
+class NKAR_EXPORT Image
 {
 public:
   //! Default constructor creates an empty image.

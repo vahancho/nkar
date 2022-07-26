@@ -25,11 +25,13 @@
 #ifndef _COLOR_H_
 #define _COLOR_H_
 
+#include "export.h"
+
 namespace nkar
 {
 
 //! Implements an RGB based color
-class Color
+class NKAR_EXPORT Color
 {
 public:
   //! Constructs an invalid color with the RGB value (0, 0, 0).

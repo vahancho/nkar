@@ -28,9 +28,6 @@
 #include <chrono>
 
 #include "comparator.cpp"
-#include "image.cpp"
-#include "color.cpp"
-#include "point.cpp"
 
 enum Status
 {
@@ -69,6 +66,7 @@ bool test(const std::string &img1, const std::string img2, const std::string &tm
 int main(int argc, char **argv)
 {
   if (argc != 2) {
+    std::cerr << "Incorrect number of parameters. Expected the path to the directory with images\n";
     return Status::Fail;
   }
 
@@ -81,10 +79,10 @@ int main(int argc, char **argv)
   }
 
   const std::string imagePath(argv[1]);
-  const std::string tmpImg(imagePath + "tmp.png");
+  const std::string tmpImg(imagePath + "/tmp.png");
   {
     // Negative tests
-    auto result = nkar::Comparator::compare(imagePath + "empty.png", "foo");
+    auto result = nkar::Comparator::compare(imagePath + "/empty.png", "foo");
     std::cout << "Expected error: " << result.errorMessage() << '\n';
     if (result.error() != nkar::Result::Error::InvalidImage)
     {
@@ -93,7 +91,7 @@ int main(int argc, char **argv)
   }
   {
     // Negative tests
-    auto result = nkar::Comparator::compare("foo", imagePath + "empty.png");
+    auto result = nkar::Comparator::compare("foo", imagePath + "/empty.png");
     std::cout << "Expected error: " << result.errorMessage() << '\n';
     if (result.error() != nkar::Result::Error::InvalidImage)
     {
@@ -102,7 +100,7 @@ int main(int argc, char **argv)
   }
   {
     // Negative tests
-    auto result = nkar::Comparator::compare(imagePath + "lenna.png", imagePath + "empty.png");
+    auto result = nkar::Comparator::compare(imagePath + "/lenna.png", imagePath + "/empty.png");
     std::cout << "Expected error: " << result.errorMessage() << '\n';
     if (result.error() != nkar::Result::Error::DifferentDimensions)
     {
@@ -112,8 +110,8 @@ int main(int argc, char **argv)
 
   // Images
   for (int i = 1; i < 14; ++i) {
-    const std::string baseline(imagePath + std::to_string(i) + "_result.png");
-    if (!test(imagePath + "empty.png", imagePath + std::to_string(i) + ".png",
+    const std::string baseline(imagePath + "/" + std::to_string(i) + "_result.png");
+    if (!test(imagePath + "/empty.png", imagePath + "/" + std::to_string(i) + ".png",
               tmpImg, baseline))
     {
       return Status::Fail;
@@ -121,15 +119,15 @@ int main(int argc, char **argv)
   }
 
   // Lenna test
-  if (!test(imagePath + "lenna.png", imagePath + "lenna_changed.png", tmpImg,
-            imagePath + "lenna_result.png"))
+  if (!test(imagePath + "/lenna.png", imagePath + "/lenna_changed.png", tmpImg,
+            imagePath + "/lenna_result.png"))
   {
     return Status::Fail;
   }
 
   // Maps
-  if (!test(imagePath + "map1.png", imagePath + "map2.png", tmpImg,
-            imagePath + "map_result.png"))
+  if (!test(imagePath + "/map1.png", imagePath + "/map2.png", tmpImg,
+            imagePath + "/map_result.png"))
   {
     return Status::Fail;
   }

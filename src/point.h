@@ -25,11 +25,13 @@
 #ifndef _POINT_H_
 #define _POINT_H_
 
+#include "export.h"
+
 namespace nkar
 {
 
 //! Implements a point in 2D space.
-class Point
+class NKAR_EXPORT Point
 {
 public:
   //! Constructs a point object with the integer coordinates.

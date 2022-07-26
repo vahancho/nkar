@@ -26,6 +26,7 @@
 #define _COMPARATOR_H_
 
 #include <string>
+#include "export.h"
 #include "image.h"
 
 namespace nkar
@@ -83,7 +84,7 @@ private:
 };
 
 //! The class performs comparison of two images and outputs result of comparison.
-class Comparator
+class NKAR_EXPORT Comparator
 {
 public:
   //! Compares two image file and returns comparison result.
