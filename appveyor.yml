@@ -1,10 +1,12 @@
 # version string format
 version: "{build}"
 
-image: Visual Studio 2013
+image:
+    - Visual Studio 2019
+    - Ubuntu2004
 
 # clone directory
-clone_folder: C:\projects\nkar
+#clone_folder: C:\projects\nkar
 
 init:
     - git config --global core.autocrlf input
@@ -15,22 +17,64 @@ branches:
     only:
         - master
 
-platform:
-    - Win32
-    - x64
+#platform:
+#    - Win32
+#    - x64
 
 # build Configurations, i.e. Debug, Release, etc.
 configuration:
-    - Debug
     - Release
 
-build_script:
-    - call "c:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\vcvarsall.bat" x86
-    - cd C:\projects\nkar
-    - mkdir build && cd build
-    - cmake ..
-    - cmake --build . --config=Release
+environment:
+  matrix:
 
-test_script:
+  - job_name: Windows build
+    appveyor_build_worker_image: Visual Studio 2019
+
+  - job_name: Linux build
+    appveyor_build_worker_image: Ubuntu2004
+
+matrix:
+  fast_finish: true
+
+# job-specific configurations
+for:
+
+  -
+    matrix:
+      only:
+        - job_name: Windows build
+
+    clone_folder: C:\projects\nkar
+
+    build_script:
+    - cmd: echo This is Windows-specific build script
+    - cmd: cd C:\projects\nkar
+    - cmd: mkdir build && cd build
+    - cmd: cmake ..
+    - cmd: cmake --build . --config=Release
+
+    test_script:
     - cd C:\projects\nkar\build
     - ctest -C Release
+
+  -
+    matrix:
+      only:
+        - job_name: Linux build
+
+    clone_folder: /home/appveyor/projects/nkar
+
+    install:
+        - sudo apt-get install gcc-multilib g++-multilib -y
+
+    build_script:
+    - sh: echo This is Linux-specific build script
+    - sh: cd /home/appveyor/projects/nkar
+    - sh: mkdir build && cd build
+    - sh: cmake ..
+    - sh: cmake --build . --config=Release
+
+    test_script:
+    - cd /home/appveyor/projects/nkar/build
+    - ctest
