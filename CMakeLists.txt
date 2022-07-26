@@ -58,7 +58,7 @@ else()
                             "It should be either x86 or x64")
     endif()
 
-    add_compile_options(-Wall -Wextra -pedantic -Werror)
+    add_compile_options(-Wall -Wextra -pedantic)
 endif()
 
 # Append a postfix for the debug libraries
