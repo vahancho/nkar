@@ -229,11 +229,12 @@ private:
   Point m_origin;
   int m_width;
   int m_height;
-  int m_xLimit;
-  int m_yLimit;
 
   const Image &m_img1;
   const Image &m_img2;
+
+  int m_xLimit;
+  int m_yLimit;
 };
 
 class Contours
