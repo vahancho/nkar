@@ -5,9 +5,6 @@ image:
     - Visual Studio 2019
     - Ubuntu2004
 
-# clone directory
-#clone_folder: C:\projects\nkar
-
 init:
     - git config --global core.autocrlf input
 
@@ -17,22 +14,23 @@ branches:
     only:
         - master
 
-#platform:
-#    - Win32
-#    - x64
+platform:
+    - x86
+    - x64
 
 # build Configurations, i.e. Debug, Release, etc.
 configuration:
+    - Debug
     - Release
 
-environment:
-  matrix:
+#environment:
+#  matrix:
 
-  - job_name: Windows build
-    appveyor_build_worker_image: Visual Studio 2019
+#  - job_name: Windows build
+#    appveyor_build_worker_image: Visual Studio 2019
 
-  - job_name: Linux build
-    appveyor_build_worker_image: Ubuntu2004
+#  - job_name: Linux build
+#    appveyor_build_worker_image: Ubuntu2004
 
 matrix:
   fast_finish: true
@@ -43,7 +41,8 @@ for:
   -
     matrix:
       only:
-        - job_name: Windows build
+        #- job_name: Windows build
+        - image: Visual Studio 2019
 
     clone_folder: C:\projects\nkar
 
@@ -61,7 +60,8 @@ for:
   -
     matrix:
       only:
-        - job_name: Linux build
+        #- job_name: Linux build
+        - image: Ubuntu2004
 
     clone_folder: /home/appveyor/projects/nkar
 
@@ -69,12 +69,18 @@ for:
         - sudo apt-get install gcc-multilib g++-multilib -y
 
     build_script:
-    - sh: echo This is Linux-specific build script
+    - sh: echo Linux build x86 \(Release\)
     - sh: cd /home/appveyor/projects/nkar
     - sh: mkdir build && cd build
-    - sh: cmake ..
-    - sh: cmake --build . --config=Release
+    - sh: cmake .. -DTARGET_ARCH=x86 -DCMAKE_BUILD_TYPE=Release
+    - sh: make
 
     test_script:
     - cd /home/appveyor/projects/nkar/build
     - ctest
+
+    after_test:
+    - sh: cpack
+
+    artifacts:
+    - path: '**\*.tar.gz'
