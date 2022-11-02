@@ -50,7 +50,7 @@ for:
     - cmd: echo This is Windows-specific build script
     - cmd: cd C:\projects\nkar
     - cmd: mkdir build && cd build
-    - cmd: cmake ..
+    - cmd: cmake .. -DENABLE_TESTING=True
     - cmd: cmake --build . --config=Release
 
     test_script:
@@ -72,7 +72,7 @@ for:
     - sh: echo Linux build x86 \(Release\)
     - sh: cd /home/appveyor/projects/nkar
     - sh: mkdir build && cd build
-    - sh: cmake .. -DTARGET_ARCH=x86 -DCMAKE_BUILD_TYPE=Release
+    - sh: cmake .. -DTARGET_ARCH=x86 -DCMAKE_BUILD_TYPE=Release -DENABLE_TESTING=True
     - sh: make
 
     test_script:

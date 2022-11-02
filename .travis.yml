@@ -7,7 +7,7 @@ before_install:
   - pip install --user cpp-coveralls
 script:
     - mkdir build && cd build
-    - cmake .. -DCMAKE_BUILD_TYPE=Release
+    - cmake .. -DCMAKE_BUILD_TYPE=Release -DENABLE_TESTING=True
     - cmake --build .
     - ctest
 after_success:

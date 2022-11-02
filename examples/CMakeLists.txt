@@ -22,16 +22,8 @@
 #  SOFTWARE.                                                                      *
 #**********************************************************************************/
 
-# Unit test application
-set(TARGET unittest)
+# Example application
+set(TARGET example)
 add_executable(${TARGET} main.cpp)
 
 target_link_libraries(${TARGET} nkar)
-
-# Copy the directory with test image files (required for testing)
-add_custom_command(TARGET ${TARGET} POST_BUILD
-                   COMMAND ${CMAKE_COMMAND} -E copy_directory
-                   ${CMAKE_SOURCE_DIR}/test/images/
-                   $<TARGET_FILE_DIR:${TARGET}>/images)
-
-add_test(NAME unittests COMMAND unittest $<TARGET_FILE_DIR:unittest>/images)

@@ -27,7 +27,7 @@
 #include <cstdio>
 #include <chrono>
 
-#include "comparator.cpp"
+#include "comparator.h"
 
 enum Status
 {

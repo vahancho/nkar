@@ -33,7 +33,7 @@ namespace nkar
 {
 
 //! Implements image comparison result.
-class Result
+class NKAR_EXPORT Result
 {
 public:
   //! The comparison status.

@@ -38,6 +38,8 @@ include(GNUInstallDirs)
 # General options
 option(BUILD_SHARED_LIBS   "Build using shared libraries" ON)
 option(BUILD_DOCUMENTATION "Build documentation"          ON)
+option(ENABLE_TESTING      "Enable unit test build"       OFF)
+option(ENABLE_EXAMPLES     "Enable examples build"        OFF)
 
 if (MSVC)
     add_compile_options(/W3)
@@ -56,6 +58,13 @@ else()
     else()
         message(FATAL_ERROR "Incorrect target architecture specified. "
                             "It should be either x86 or x64")
+    endif()
+
+    # Get the architecture: x86 vs x64
+    if(TARGET_ARCH STREQUAL "x64")
+        set(BIT "x86_64")
+    else()
+        set(BIT "x86")
     endif()
 
     add_compile_options(-Wall -Wextra -pedantic)
@@ -88,8 +97,7 @@ if (DOXYGEN_FOUND AND BUILD_DOCUMENTATION)
     set(DOXYGEN_WARN_NO_PARAMDOC        YES)
     set(DOXYGEN_RECURSIVE               YES)
     set(DOXYGEN_EXCLUDE                 ${PROJECT_SOURCE_DIR}/test
-                                        ${PROJECT_SOURCE_DIR}/make
-                                        ${PROJECT_SOURCE_DIR}/src/libs/pugixml)
+                                        ${PROJECT_SOURCE_DIR}/examples)
     set(DOXYGEN_HTML_OUTPUT             .)
     set(DOXYGEN_GENERATE_TREEVIEW       YES)
     set(DOXYGEN_USE_MDFILE_AS_MAINPAGE  README.md)
@@ -102,21 +110,36 @@ if (DOXYGEN_FOUND AND BUILD_DOCUMENTATION)
 else()
     message("Failed to generate documentation: Doxygen is not found")
 endif()
-###############################################################################
-
-# Get the architecture: x86 vs x64
-if(TARGET_ARCH STREQUAL "x64")
-    set(BIT "x86_64")
-else()
-    set(BIT "x86")
-endif()
 
 ###############################################################################
 # Testing
 #
-enable_testing()
-include(Dart)
-add_test(NAME unittests COMMAND unittest $<TARGET_FILE_DIR:unittest>/images)
+if (ENABLE_TESTING)
+    # Coverage support.
+    option(CODE_COVERAGE "Enable coverage reporting" ON)
+    if (CODE_COVERAGE AND CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+        # Add required flags (GCC & LLVM/Clang)
+	    add_compile_options(-O0        # no optimization
+                            -g         # generate debug info
+			                --coverage # sets all required flags
+	    )
+	    if (CMAKE_VERSION VERSION_GREATER_EQUAL 3.13)
+	        add_link_options(--coverage)
+	    else()
+	        link_libraries(--coverage)
+	    endif()
+    endif()
+endif()
 
 add_subdirectory(src)
-add_subdirectory(test)
+
+if (ENABLE_EXAMPLES)
+    add_subdirectory(examples)
+endif()
+
+if (ENABLE_TESTING)
+    enable_testing()
+    include(Dart)
+
+    add_subdirectory(test)
+endif()
