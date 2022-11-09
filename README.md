@@ -11,6 +11,7 @@ According to [stb single-file public domain libraries](https://github.com/nothin
 we use for image loading/decoding/saving the following image formats are supported:
 JPG, PNG, TGA, BMP, PSD, GIF, HDR, PIC.
 
+[![Test (CMake)](https://github.com/vahancho/nkar/actions/workflows/cmake.yml/badge.svg)](https://github.com/vahancho/nkar/actions/workflows/cmake.yml)
 [![Build status](https://ci.appveyor.com/api/projects/status/gh9v3ynrm1dt1w7t/branch/master?svg=true)](https://ci.appveyor.com/project/vahancho/nkar/branch/master)
 [![codecov](https://codecov.io/gh/vahancho/nkar/branch/master/graph/badge.svg)](https://codecov.io/gh/vahancho/nkar)
 
