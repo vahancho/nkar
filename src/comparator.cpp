@@ -36,9 +36,10 @@ namespace nkar
 {
 
 // Default width and height of the scan rectangle. Each of parameters should be
-// greater or equal to one. Smaller values correspond to the preciser and slower calculations.
-static const int scanRectWidth = 1;  // The highest precision
-static const int scanRectHeight = 1; // The highest precision
+// greater or equal to one. Smaller values correspond to the more precise and slower calculations.
+static constexpr int s_scanRectWidth = 1;  // The highest precision
+static constexpr int s_scanRectHeight = 1; // The highest precision
+static constexpr int s_maxRectDimentinon = std::max(s_scanRectWidth, s_scanRectHeight);
 
 class Edge
 {
@@ -182,8 +183,8 @@ public:
   {
     const int cMax = std::min(m_origin.x() + m_width, m_xLimit);
     const int rMax = std::min(m_origin.y() + m_height, m_yLimit);
-    for (int c = m_origin.x(); c < cMax; c++) {
-      for (int r = m_origin.y(); r < rMax; r++) {
+    for (int c = m_origin.x(); c <= cMax; c++) {
+      for (int r = m_origin.y(); r <= rMax; r++) {
         Color color1 = m_img1.pixel(r, c);
         Color color2 = m_img2.pixel(r, c);
 
@@ -206,7 +207,7 @@ public:
   ScanRectangle &operator++()
   {
     if (!atEnd()) {
-      if (m_origin.x() < m_xLimit) {
+      if (m_origin.x() < m_xLimit - m_width) {
         m_origin.x() += m_width;
       } else if (m_origin.y() < m_yLimit) {
         // Move to the next row and left most position.
@@ -264,7 +265,7 @@ public:
     for (auto &e : edges) {
       if (!e.visited()) {
         contours.emplace_back();
-        // print all reachable edges from edge
+        // Find all reachable edges from edge
         dfs(e, edges, contours.back());
       }
     }
@@ -272,6 +273,7 @@ public:
   }
 
 private:
+  /// Implements the DFS algorithm
   void dfs(Edge &edge, std::vector<Edge> &edges, std::vector<Edge> &contour)
   {
     std::stack<Edge *> stack;
@@ -289,13 +291,25 @@ private:
       e->setVisited();
       contour.emplace_back(*e);
 
+      auto end = e->end();
+      auto begin = e->begin();
+
       // Find all edges adjacent to this edge
       for (auto &currentEdge : edges) {
         if (!currentEdge.visited()) {
-          if (e->end()   == currentEdge.begin() || e->end()   == currentEdge.end() ||
-              e->begin() == currentEdge.begin() || e->begin() == currentEdge.end())
+          auto cb = currentEdge.begin();
+          auto ce = currentEdge.end();
+          if (end   == cb || end   == ce ||
+              begin == cb || begin == ce)
           {
             stack.push(&currentEdge);
+          } else if (begin.minDistance(cb) > s_maxRectDimentinon &&
+                     begin.minDistance(ce) > s_maxRectDimentinon &&
+                     end.minDistance(cb)   > s_maxRectDimentinon &&
+                     end.minDistance(ce)   > s_maxRectDimentinon) {
+            // The edges are too far from each other. Doesn't make sense to
+            // continue. This logic is valid, because the edges are sorted.
+            break;
           }
         }
       }
@@ -365,7 +379,7 @@ Result Comparator::compare(const Image &image1, const Image &image2)
   }
 
   Point origin{ 0, 0 }; // Start scanning from the upper left corner.
-  ScanRectangle sr(origin, scanRectWidth, scanRectHeight, image1, image2);
+  ScanRectangle sr(origin, s_scanRectWidth, s_scanRectHeight, image1, image2);
   Contours contours;
   while (!sr.atEnd()) {
     if (!sr.test()) {
