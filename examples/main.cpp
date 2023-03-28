@@ -23,6 +23,8 @@
 ***********************************************************************************/
 
 #include <string>
+#include <chrono>
+#include <iostream>
 
 #include "comparator.h"
 #include "image.h"
@@ -48,7 +50,12 @@ int main(int argc, char **argv)
     return IncorrectOptions;
   }
 
+  auto start = std::chrono::high_resolution_clock::now();
   auto result = nkar::Comparator::compare(argv[1], argv[2]);
+  auto end = std::chrono::high_resolution_clock::now();
+  std::cout << "Comparison duration: "
+            << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count()
+            << "ms. Contours found: " << result.contourCount() << '\n';
 
   if (result.error() != nkar::Result::Error::NoError)
   {
