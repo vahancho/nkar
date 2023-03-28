@@ -37,9 +37,15 @@ namespace nkar
 
 // Default width and height of the scan rectangle. Each of parameters should be
 // greater or equal to one. Smaller values correspond to the more precise and slower calculations.
-static constexpr int s_scanRectWidth = 1;  // The highest precision
-static constexpr int s_scanRectHeight = 1; // The highest precision
-static constexpr int s_maxRectDimentinon = std::max(s_scanRectWidth, s_scanRectHeight);
+static constexpr int s_scanRectWidth = 1;  // The highest horizontal precision
+static constexpr int s_scanRectHeight = 1; // The highest vertical precision
+
+#if __cplusplus > 201103L
+  // std::max is constexpr starting from c++14
+  static constexpr int s_maxRectDimentinon = std::max(s_scanRectWidth, s_scanRectHeight);
+#else
+  static constexpr int s_maxRectDimentinon = 1;
+#endif
 
 class Edge
 {

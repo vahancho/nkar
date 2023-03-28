@@ -42,7 +42,8 @@ option(ENABLE_TESTING      "Enable unit test build"       OFF)
 option(ENABLE_EXAMPLES     "Enable examples build"        OFF)
 
 if (MSVC)
-    add_compile_options(/W3)
+    # Make sure the __cplusplus macro reflects the true value for the C++ standard used.
+    add_compile_options(/W3 /Zc:__cplusplus)
 else()
     # Specify the target architecture (Linux). For Windows based generator use rather
     # '-A Win32' or '-A x64 options'
