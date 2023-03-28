@@ -24,6 +24,8 @@
 
 #include "point.h"
 
+#include <algorithm>
+
 namespace nkar
 {
 
@@ -36,6 +38,11 @@ Point::Point(int x, int y)
 bool Point::operator==(const Point &other) const
 {
   return m_x == other.m_x && m_y == other.m_y;
+}
+
+int Point::minDistance(const Point &other) const
+{
+    return std::min(std::abs(m_x - other.m_x), std::abs(m_y - other.m_y));
 }
 
 bool Point::operator<(const Point &other) const

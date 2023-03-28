@@ -43,6 +43,9 @@ public:
   */
   bool operator==(const Point &other) const;
 
+  ///! Returns the minimum distance between to points either horizontally or vertically.
+  int minDistance(const Point &other) const;
+
   //! Compare two points.
   /*!
     A point is less than other point if it's upper and lefter of \p other point.
