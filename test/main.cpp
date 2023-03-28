@@ -109,7 +109,7 @@ int main(int argc, char **argv)
   }
 
   // Images
-  for (int i = 1; i < 14; ++i) {
+  for (int i = 1; i < 19; ++i) {
     const std::string baseline(imagePath + "/" + std::to_string(i) + "_result.png");
     if (!test(imagePath + "/empty.png", imagePath + "/" + std::to_string(i) + ".png",
               tmpImg, baseline))
