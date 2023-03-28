@@ -132,5 +132,11 @@ int main(int argc, char **argv)
     return Status::Fail;
   }
 
+  // Large
+  if (!test(imagePath + "/large.png", imagePath + "/empty_large.png", tmpImg,
+            imagePath + "/large_result.png")) {
+      return Status::Fail;
+  }
+
   return Status::Ok;
 }
