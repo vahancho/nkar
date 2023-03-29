@@ -71,6 +71,17 @@ jobs:
       # Execute tests defined by the CMake configuration.
       run: ctest -C ${{env.BUILD_TYPE}} --verbose
 
+    # Calculate the test coverage Linux
+    - name: Test coverage (Codecov)
+      if: matrix.os == 'ubuntu-latest'
+      working-directory: ${{github.workspace}}
+      run: |
+        rm -rf build
+        cmake -B build -DCMAKE_BUILD_TYPE=Debug -DENABLE_TESTING=True -DCODE_COVERAGE=True -DTARGET_ARCH=x64
+        cmake --build build --config Debug
+        cd build
+        ctest -C Debug --verbose
+
     # Upload coverage report only for Linux
     - name: Upload coverage to Codecov
       if: matrix.os == 'ubuntu-latest'

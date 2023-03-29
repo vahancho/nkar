@@ -118,7 +118,7 @@ endif()
 if (ENABLE_TESTING)
     # Coverage support.
     option(CODE_COVERAGE "Enable coverage reporting" OFF)
-    if (CODE_COVERAGE AND CMAKE_BUILD_TYPE EQUAL "Debug" AND CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+    if (CODE_COVERAGE AND CMAKE_BUILD_TYPE STREQUAL Debug AND CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
         # Add required flags (GCC & LLVM/Clang)
 	    add_compile_options(-O0        # no optimization
                             -g         # generate debug info
