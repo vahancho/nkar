@@ -129,6 +129,7 @@ that highlight the differences:
 | <img src="./test/images/map1.png" width="200"> | <img src="./test/images/map2.png" width="200"> | <img src="./test/images/map_result.png" width="200"> |
 | ![](./test/images/empty.png) | ![](./test/images/13.png) | ![1diff](./test/images/13_result.png) |
 | ![](./test/images/lenna.png) | ![](./test/images/lenna_changed.png) | ![1diff](./test/images/lenna_result.png) |
+| <img src="./test/images/empty_large.png" width="200"> | <img src="./test/images/large.png" width="200"> | <img src="./test/images/large_result.png" width="200"> |
 
 ### See Also
 

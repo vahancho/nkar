@@ -125,7 +125,7 @@ int main(int argc, char **argv)
              imagePath + "/map_result.png"));
 
   // Large
-  TEST(test(imagePath + "/large.png", imagePath + "/empty_large.png", tmpImg,
+  TEST(test(imagePath + "/empty_large.png", imagePath + "/large.png", tmpImg,
             imagePath + "/large_result.png"));
 
   // Test the nkar::Point
