@@ -134,12 +134,14 @@ int main(int argc, char **argv)
   nkar::Point p2{0, 1};
   nkar::Point p3{1, 1};
   nkar::Point p4{0, 0};
+  nkar::Point p5{-1, -1};
 
   TEST(p0 < p1);
   TEST(p0 < p2);
   TEST(p0 < p3);
   TEST(!(p0 < p4));
   TEST(p2 < p1);
+  TEST(!(p0 < p5));
 
   // Test nkar::Image
   nkar::Image image;
