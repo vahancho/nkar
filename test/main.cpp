@@ -125,10 +125,30 @@ int main(int argc, char **argv)
              imagePath + "/map_result.png"));
 
   // Large
-  if (!test(imagePath + "/large.png", imagePath + "/empty_large.png", tmpImg,
-            imagePath + "/large_result.png")) {
-      return Status::Fail;
-  }
+  TEST(test(imagePath + "/large.png", imagePath + "/empty_large.png", tmpImg,
+            imagePath + "/large_result.png"));
+
+  // Test the nkar::Point
+  nkar::Point p0{0, 0};
+  nkar::Point p1{1, 0};
+  nkar::Point p2{0, 1};
+  nkar::Point p3{1, 1};
+  nkar::Point p4{0, 0};
+
+  TEST(p0 < p1);
+  TEST(p0 < p2);
+  TEST(p0 < p3);
+  TEST(!(p0 < p4));
+  TEST(p2 < p1);
+
+  // Test nkar::Image
+  nkar::Image image;
+  TEST(image.pixel(0, 0).red() == 0);
+  TEST(image.pixel(0, 0).green() == 0);
+  TEST(image.pixel(0, 0).blue() == 0);
+
+  image.drawLine({}, {}, {});
+  TEST(image.save("foo") == false);
 
   return Status::Ok;
 }
