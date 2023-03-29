@@ -28,12 +28,22 @@
 #include <chrono>
 
 #include "comparator.h"
+#include "point.h"
 
 enum Status
 {
   Ok,
   Fail
 };
+
+#define STRINGIFY_HELPER(x) #x
+#define STRINGIFY(x) STRINGIFY_HELPER(x)
+#define LOCATION std::string(__FILE__ ":" STRINGIFY(__LINE__))
+#define TEST(EXP) \
+    if (!(EXP)) {\
+        std::cerr << "FAIL: " << #EXP << " at: " << LOCATION << '\n'; \
+        return Status::Fail; \
+    }
 
 bool test(const std::string &img1, const std::string img2, const std::string &tmpImg,
           const std::string &baseline)
@@ -84,53 +94,35 @@ int main(int argc, char **argv)
     // Negative tests
     auto result = nkar::Comparator::compare(imagePath + "/empty.png", "foo");
     std::cout << "Expected error: " << result.errorMessage() << '\n';
-    if (result.error() != nkar::Result::Error::InvalidImage)
-    {
-      return Status::Fail;
-    }
+    TEST(result.error() == nkar::Result::Error::InvalidImage);
   }
   {
     // Negative tests
     auto result = nkar::Comparator::compare("foo", imagePath + "/empty.png");
     std::cout << "Expected error: " << result.errorMessage() << '\n';
-    if (result.error() != nkar::Result::Error::InvalidImage)
-    {
-      return Status::Fail;
-    }
+    TEST(result.error() == nkar::Result::Error::InvalidImage);
   }
   {
     // Negative tests
     auto result = nkar::Comparator::compare(imagePath + "/lenna.png", imagePath + "/empty.png");
     std::cout << "Expected error: " << result.errorMessage() << '\n';
-    if (result.error() != nkar::Result::Error::DifferentDimensions)
-    {
-      return Status::Fail;
-    }
+    TEST(result.error() == nkar::Result::Error::DifferentDimensions);
   }
 
   // Images
   for (int i = 1; i < 19; ++i) {
     const std::string baseline(imagePath + "/" + std::to_string(i) + "_result.png");
-    if (!test(imagePath + "/empty.png", imagePath + "/" + std::to_string(i) + ".png",
-              tmpImg, baseline))
-    {
-      return Status::Fail;
-    }
+    TEST(test(imagePath + "/empty.png", imagePath + "/" + std::to_string(i) + ".png",
+               tmpImg, baseline));
   }
 
   // Lenna test
-  if (!test(imagePath + "/lenna.png", imagePath + "/lenna_changed.png", tmpImg,
-            imagePath + "/lenna_result.png"))
-  {
-    return Status::Fail;
-  }
+  TEST(test(imagePath + "/lenna.png", imagePath + "/lenna_changed.png", tmpImg,
+             imagePath + "/lenna_result.png"));
 
   // Maps
-  if (!test(imagePath + "/map1.png", imagePath + "/map2.png", tmpImg,
-            imagePath + "/map_result.png"))
-  {
-    return Status::Fail;
-  }
+  TEST(test(imagePath + "/map1.png", imagePath + "/map2.png", tmpImg,
+             imagePath + "/map_result.png"));
 
   // Large
   if (!test(imagePath + "/large.png", imagePath + "/empty_large.png", tmpImg,
