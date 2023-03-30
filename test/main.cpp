@@ -86,9 +86,9 @@ int main(int argc, char **argv)
   TEST(color.green() == 0);
   TEST(color.blue() == 0);
 
-  color = {255, 255, 255};
-  TEST(color.red() == 255);
-  TEST(color.green() == 255);
+  color = {253, 254, 255};
+  TEST(color.red() == 253);
+  TEST(color.green() == 254);
   TEST(color.blue() == 255);
 
   const std::string imagePath(argv[1]);
