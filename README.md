@@ -46,7 +46,7 @@ target_link_libraries(example nkar)
 ### Prerequisites
 
 There are no special requirements and dependencies except *C++11* compliant compiler.
-For more details see the CI badges (*AppVeyor CI* etc.).
+For more details see the CI badges (*GitHub Actions*, *AppVeyor CI* etc.).
 
 ### Usage Example:
 
@@ -68,7 +68,8 @@ int main(int argc, char **argv)
   }
 
   // Compare two image files.
-  auto result = Comparator::compare(argv[1], argv[2]);
+  auto highlightColor = Color{0, 255, 0}; // The diff outline color.
+  auto result = Comparator::compare(argv[1], argv[2], highlightColor);
 
   if (result.error() != Result::Error::NoError) {
     // An error occurred during comparison.

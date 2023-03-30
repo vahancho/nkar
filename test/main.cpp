@@ -46,10 +46,10 @@ enum Status
     }
 
 bool test(const std::string &img1, const std::string img2, const std::string &tmpImg,
-          const std::string &baseline)
+          const std::string &baseline, const nkar::Color &highlightColor = {255, 0, 0})
 {
   auto start = std::chrono::high_resolution_clock::now();
-  auto result = nkar::Comparator::compare(img1, img2);
+  auto result = nkar::Comparator::compare(img1, img2, highlightColor);
   auto end = std::chrono::high_resolution_clock::now();
 
   std::cout << "comparison duration: "
@@ -121,7 +121,7 @@ int main(int argc, char **argv)
 
   // Lenna test
   TEST(test(imagePath + "/lenna.png", imagePath + "/lenna_changed.png", tmpImg,
-             imagePath + "/lenna_result.png"));
+             imagePath + "/lenna_result.png", {51, 255, 51}));
 
   // Maps
   TEST(test(imagePath + "/map1.png", imagePath + "/map2.png", tmpImg,

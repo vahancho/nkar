@@ -91,7 +91,13 @@ public:
   static Result compare(const std::string &file1, const std::string &file2);
 
   //! Compares two images and returns comparison result.
-  static Result compare(const Image &image1, const Image &image2);
+  /*!
+    \param image1 An actual image to compare
+    \param image2 A baseline image to compare with. The diff outline will be drawn on this image
+    \param highlightColor The color the diff outlines. Default color is red.
+  */
+  static Result compare(const Image &image1, const Image &image2,
+                        const Color &highlightColor = {255, 0, 0});
 };
 
 }

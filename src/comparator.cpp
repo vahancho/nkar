@@ -372,7 +372,8 @@ void Result::setContourCount(size_t count)
 
 ////////////////////////////////////////////////////////////////////////////////
 
-Result Comparator::compare(const Image &image1, const Image &image2)
+Result Comparator::compare(const Image &image1, const Image &image2,
+                           const Color &highlightColor)
 {
   if (image1.isNull() || image2.isNull()) {
     return Result(Result::Status::Unknown, Result::Error::InvalidImage,
@@ -402,8 +403,7 @@ Result Comparator::compare(const Image &image1, const Image &image2)
     for (size_t i = 0; i < cont.size(); ++i) {
       const auto &contour = cont[i];
       for (const auto &edge : contour) {
-        // Draw red line for each edge.
-        static const Color highlightColor{ 255, 0, 0 };
+        // Draw outline for each edge.
         output.drawLine(edge.begin(), edge.end(), highlightColor);
       }
     }
