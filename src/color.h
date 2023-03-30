@@ -27,6 +27,8 @@
 
 #include "export.h"
 
+#include <cstdint>
+
 namespace nkar
 {
 
@@ -34,14 +36,11 @@ namespace nkar
 class NKAR_EXPORT Color
 {
 public:
-  //! Constructs an invalid color with the RGB value (0, 0, 0).
-  Color();
-
   //! Constructs a color with the RGB value \p red, \p green, \p blue.
   /*
     A color is normally specified in terms of RGB (red, green, and blue) components.
   */
-  Color(int red, int green, int blue);
+  Color(uint8_t red = 0, uint8_t green = 0, uint8_t blue = 0);
 
   //! Compares two colors.
   /*!
@@ -50,18 +49,16 @@ public:
   bool operator!=(const Color &other);
 
   //! Returns the red component of the color.
-  int red() const;
+  uint8_t red() const;
 
   //! Returns the green component of the color.
-  int green() const;
+  uint8_t green() const;
 
   //! Returns the blue component of the color.
-  int blue() const;
+  uint8_t blue() const;
 
 private:
-  int m_red;
-  int m_green;
-  int m_blue;
+  uint32_t m_rgba{0};
 };
 
 }

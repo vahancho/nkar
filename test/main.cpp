@@ -82,11 +82,14 @@ int main(int argc, char **argv)
 
   // Color test.
   nkar::Color color;
-  if (color.red() != 0 || color.green() != 0 || color.blue() != 0)
-  {
-    std::cerr << "Incorrect default constructed color\n";
-    return Status::Fail;
-  }
+  TEST(color.red() == 0);
+  TEST(color.green() == 0);
+  TEST(color.blue() == 0);
+
+  color = {255, 255, 255};
+  TEST(color.red() == 255);
+  TEST(color.green() == 255);
+  TEST(color.blue() == 255);
 
   const std::string imagePath(argv[1]);
   const std::string tmpImg(imagePath + "/tmp.png");

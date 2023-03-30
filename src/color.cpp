@@ -27,40 +27,38 @@
 namespace nkar
 {
 
-Color::Color()
+Color::Color(uint8_t r, uint8_t g, uint8_t b)
   :
-    m_red(0),
-    m_green(0),
-    m_blue(0)
-{}
-
-Color::Color(int r, int g, int b)
-  :
-    m_red(r),
-    m_green(g),
-    m_blue(b)
-{}
+    m_rgba{(uint32_t) r | (uint32_t) g << 8 | (uint32_t) b << 16 | (uint32_t) 0 << 24}
+{
+}
 
 bool Color::operator!=(const Color &other)
 {
+  /*
   return m_red   != other.m_red ||
          m_green != other.m_green ||
          m_blue  != other.m_blue;
+  */
+  return m_rgba != other.m_rgba;
 }
 
-int Color::red() const
+uint8_t Color::red() const
 {
-  return m_red;
+  //return m_red;
+  return (uint8_t)m_rgba;
 }
 
-int Color::green() const
+uint8_t Color::green() const
 {
-  return m_green;
+  //return m_green;
+  return (uint8_t)(m_rgba >> 8);
 }
 
-int Color::blue() const
+uint8_t Color::blue() const
 {
-  return m_blue;
+  //return m_blue;
+  return (uint8_t)(m_rgba >> 16);
 }
 
 }
