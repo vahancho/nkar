@@ -30,7 +30,7 @@ set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 # The project definition
-project(nkar VERSION 0.2.1 DESCRIPTION "The image comparison library" LANGUAGES CXX)
+project(nkar VERSION 0.3.0 DESCRIPTION "The image comparison library" LANGUAGES CXX)
 
 # Make cache variables for install destinations
 include(GNUInstallDirs)
